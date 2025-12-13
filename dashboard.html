@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mirsad Intelligence | Comprehensive Report</title>
+    <title>Mirsad Intelligence | Executive Dashboard</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -18,12 +18,12 @@
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         brand: {
-                            dark: '#0f172a',    // Darker Slate
-                            primary: '#3b82f6', // Bright Blue
-                            success: '#10b981', // Emerald
-                            warning: '#f59e0b', // Amber
-                            danger: '#ef4444',  // Red
-                            light: '#f8fafc'    // Slate 50
+                            dark: '#0f172a',    
+                            primary: '#3b82f6', 
+                            success: '#10b981', 
+                            warning: '#f59e0b', 
+                            danger: '#ef4444',  
+                            light: '#f8fafc'    
                         }
                     }
                 }
@@ -32,7 +32,6 @@
 
         function dashboard() {
             return {
-                activeTab: 'overview',
                 sentimentFilter: 'all',
                 posts: [
                     { 
@@ -53,7 +52,7 @@
                         user: 'Muna AbuSulayman', 
                         handle: '@abusulayman', 
                         date: 'Oct 30', 
-                        content: "سعدت بدعوتي لزيارة <span class='font-bold text-gray-900'>مركز الحسين للسرطان</span>. فخورة بوجود هذا الصرح الطبي المتميز، لما يقدمه من علاج شامل وفق أحدث المعايير العالمية. 🇯🇴", 
+                        content: "سعدت بدعوتي لزيارة <span class='font-bold text-gray-900'>مركز الحسين للسرطان</span>. فخورة بوجود هذا الصرح الطبي المتميز. 🇯🇴", 
                         sentiment: 'positive',
                         engagement: 'Viral',
                         likes: '1.2k',
@@ -65,7 +64,7 @@
                         user: 'Naser Q Qaqish', 
                         handle: 'Top Fan', 
                         date: 'Dec 09', 
-                        content: "ضحك على الناس يعني الي عمره اقل من ستين سنه ما اله الحق يتعالج؟ قرار غير عادل بحق الفئة العمرية المتوسطة. <span class='font-bold text-gray-900'>#Insurance_Policy</span>", 
+                        content: "ضحك على الناس يعني الي عمره اقل من ستين سنه ما اله الحق يتعالج؟ قرار غير عادل. <span class='font-bold text-gray-900'>#Insurance_Policy</span>", 
                         sentiment: 'negative',
                         engagement: 'Medium',
                         likes: '45',
@@ -77,7 +76,7 @@
                         user: 'Al Mamlaka TV', 
                         handle: 'News Source', 
                         date: 'Dec 06', 
-                        content: "إطلاق بطاقات التأمين الحكومي للعلاج في مركز الحسين للسرطان. تشمل الفئات دون 19 عاماً وفوق 60 عاماً.", 
+                        content: "إطلاق بطاقات التأمين الحكومي للعلاج في مركز الحسين للسرطان.", 
                         sentiment: 'neutral',
                         engagement: 'Medium',
                         likes: '890',
@@ -89,7 +88,7 @@
                         user: 'AraBella', 
                         handle: '@AraBellaa_962', 
                         date: 'Jan 05', 
-                        content: "بأيدي وعقول أردنية، مركز الحسين يجري أول عملية نوعية لأورام الدماغ باستخدام الليزر والروبوت. الأولى من نوعها في المنطقة! 🧠🤖", 
+                        content: "بأيدي وعقول أردنية، مركز الحسين يجري أول عملية نوعية لأورام الدماغ باستخدام الليزر والروبوت. 🧠🤖", 
                         sentiment: 'positive',
                         engagement: 'High',
                         likes: '2.1k',
@@ -163,36 +162,38 @@
             <div class="p-8 max-w-7xl mx-auto space-y-6">
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-xs font-bold text-slate-400 uppercase">Net Sentiment Score</p>
-                                <h3 class="text-2xl font-bold text-slate-800 mt-1">83%</h3>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-center mb-2">
+                            <p class="text-xs font-bold text-slate-400 uppercase">Brand Health Index</p>
+                            <span class="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold">Excellent</span>
+                        </div>
+                        <div class="relative h-24 flex justify-center items-end">
+                            <canvas id="bhiChart"></canvas>
+                            <div class="absolute bottom-0 mb-[-5px] flex flex-col items-center">
+                                <span class="text-3xl font-bold text-slate-800">0.8</span>
                             </div>
-                            <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-bold">+12%</span>
                         </div>
-                        <div class="mt-4 h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                            <div class="h-full bg-brand-success w-[83%]"></div>
-                        </div>
+                        <p class="text-center text-[10px] text-slate-400 mt-2">Loved on the Internet!</p>
                     </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
                          <div>
                             <p class="text-xs font-bold text-slate-400 uppercase">Total Mentions</p>
-                            <h3 class="text-2xl font-bold text-slate-800 mt-1">318</h3>
+                            <h3 class="text-3xl font-bold text-slate-800 mt-2">318</h3>
                         </div>
                         <p class="text-xs text-slate-400 mt-2">↑ 45 from last period</p>
                     </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
                          <div>
                             <p class="text-xs font-bold text-slate-400 uppercase">Est. Reach</p>
-                            <h3 class="text-2xl font-bold text-slate-800 mt-1">65.2K</h3>
+                            <h3 class="text-3xl font-bold text-slate-800 mt-2">65.2K</h3>
                         </div>
                         <p class="text-xs text-slate-400 mt-2">Driven by Viral Video</p>
                     </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
                          <div>
                             <p class="text-xs font-bold text-slate-400 uppercase">Engagement Rate</p>
-                            <h3 class="text-2xl font-bold text-slate-800 mt-1">4.8%</h3>
+                            <h3 class="text-3xl font-bold text-slate-800 mt-2">4.8%</h3>
                         </div>
                         <p class="text-xs text-slate-400 mt-2">High for Healthcare Sector</p>
                     </div>
@@ -201,7 +202,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-slate-700">Mention Velocity (Timeline)</h3>
+                            <h3 class="font-bold text-slate-700">Mention Velocity</h3>
                             <div class="flex items-center space-x-2 text-xs">
                                 <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-blue-500 mr-1"></span> Owned</span>
                                 <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-purple-500 mr-1"></span> Earned</span>
@@ -224,29 +225,19 @@
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                         <h3 class="font-bold text-slate-700 mb-2">Demographics</h3>
                         <p class="text-xs text-slate-400 mb-4">Inferred from Usernames</p>
-                        <div class="h-40 relative flex justify-center">
+                        <div class="h-48 relative flex justify-center">
                             <canvas id="demoChart"></canvas>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-2">
-                                <span class="text-2xl font-bold text-slate-700">68%</span>
-                                <span class="text-[10px] text-slate-400 uppercase">Female</span>
-                            </div>
                         </div>
-                        <div class="mt-4 grid grid-cols-2 gap-2 text-center">
-                            <div class="bg-pink-50 p-2 rounded">
-                                <span class="block text-xs font-bold text-pink-700">Female</span>
-                                <span class="text-xs text-pink-600">Dominant (Hope/Care)</span>
-                            </div>
-                            <div class="bg-blue-50 p-2 rounded">
-                                <span class="block text-xs font-bold text-blue-700">Male</span>
-                                <span class="text-xs text-blue-600">Minority (Policy/Gov)</span>
-                            </div>
+                        <div class="mt-2 flex justify-center space-x-4">
+                            <div class="flex items-center"><span class="w-3 h-3 bg-pink-500 rounded-full mr-1"></span><span class="text-xs font-bold text-slate-600">Female</span></div>
+                            <div class="flex items-center"><span class="w-3 h-3 bg-blue-500 rounded-full mr-1"></span><span class="text-xs font-bold text-slate-600">Male</span></div>
                         </div>
                     </div>
 
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-700 mb-4">Publisher Categories</h3>
+                        <h3 class="font-bold text-slate-700 mb-4">Social Mentions Sources</h3>
                         <div class="h-48">
-                            <canvas id="publisherChart"></canvas>
+                            <canvas id="sourceChart"></canvas>
                         </div>
                     </div>
 
@@ -294,7 +285,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    
                     <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                         <div class="p-5 border-b border-slate-100 bg-slate-50">
                             <h3 class="font-bold text-slate-700">Top Influencers</h3>
@@ -328,11 +318,6 @@
                                         <td class="px-4 py-3 font-medium text-slate-800">Sereen Al-Tbakhi</td>
                                         <td class="px-4 py-3 text-green-600 font-bold">Patient Mom</td>
                                         <td class="px-4 py-3 text-xs"><span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded">Community</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50">
-                                        <td class="px-4 py-3 font-medium text-slate-800">Dr. Bader Al-Madi</td>
-                                        <td class="px-4 py-3 text-slate-500 font-bold">Pro. Endorse</td>
-                                        <td class="px-4 py-3 text-xs"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Doctor</span></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -380,17 +365,80 @@
                             </template>
                         </div>
                     </div>
-
                 </div>
             </div>
         </main>
     </div>
 
     <script>
+        Chart.register(ChartDataLabels);
         Chart.defaults.font.family = "'Inter', sans-serif";
         Chart.defaults.color = '#64748b';
 
-        // 1. VELOCITY CHART (Owned vs Earned)
+        // 1. BRAND HEALTH INDEX (GAUGE CHART)
+        const ctxBHI = document.getElementById('bhiChart').getContext('2d');
+        
+        // Custom plugin to draw the needle
+        const gaugeNeedle = {
+            id: 'gaugeNeedle',
+            afterDatasetDraw(chart, args, options) {
+                const { ctx, config, data, chartArea: { top, bottom, left, right, width, height } } = chart;
+                ctx.save();
+                
+                // Needle Value (0.8 mapped to angle)
+                const value = 0.8;
+                const angle = Math.PI + (Math.PI * value); 
+
+                const cx = width / 2;
+                const cy = height - 10; // Adjust based on chart cutout
+
+                // Draw Needle
+                ctx.translate(cx, cy);
+                ctx.rotate(angle);
+                ctx.beginPath();
+                ctx.moveTo(0, -2);
+                ctx.lineTo(height - 20, 0); // Length
+                ctx.lineTo(0, 2);
+                ctx.fillStyle = '#3b82f6'; // Brand Blue Needle
+                ctx.fill();
+                
+                // Draw Pivot Circle
+                ctx.rotate(-angle);
+                ctx.beginPath();
+                ctx.arc(0, 0, 5, 0, 10);
+                ctx.fillStyle = '#3b82f6';
+                ctx.fill();
+                ctx.restore();
+            }
+        };
+
+        new Chart(ctxBHI, {
+            type: 'doughnut',
+            data: {
+                labels: ['Bad', 'Average', 'Good', 'Excellent'],
+                datasets: [{
+                    data: [0.2, 0.2, 0.2, 0.4],
+                    backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
+                    borderWidth: 0,
+                    needleValue: 0.8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                rotation: -90,
+                circumference: 180,
+                cutout: '85%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false },
+                    datalabels: { display: false } // Hide labels on the gauge ring itself
+                }
+            },
+            plugins: [gaugeNeedle]
+        });
+
+        // 2. VELOCITY CHART
         const ctxVelocity = document.getElementById('velocityChart').getContext('2d');
         const gradBlue = ctxVelocity.createLinearGradient(0, 0, 0, 300);
         gradBlue.addColorStop(0, 'rgba(59, 130, 246, 0.2)'); gradBlue.addColorStop(1, 'rgba(59, 130, 246, 0)');
@@ -406,10 +454,18 @@
                     { label: 'Earned', data: [200, 250, 300, 280, 320, 500, 450], borderColor: '#a855f7', backgroundColor: gradPurple, fill: true, tension: 0.4, borderWidth: 2 }
                 ]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { borderDash: [4, 4] }, beginAtZero: true } } }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    legend: { display: false },
+                    datalabels: { display: false } // No labels on line chart to avoid clutter
+                }, 
+                scales: { x: { grid: { display: false } }, y: { grid: { borderDash: [4, 4] }, beginAtZero: true } } 
+            }
         });
 
-        // 2. SENTIMENT BY PLATFORM
+        // 3. SENTIMENT BY PLATFORM (Labels Enabled)
         new Chart(document.getElementById('platformSentimentChart'), {
             type: 'bar',
             data: {
@@ -420,25 +476,73 @@
                     { label: 'Negative', data: [25, 5, 0], backgroundColor: '#ef4444', stack: 'Stack 0' }
                 ]
             },
-            options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false } }, y: { display: false } }, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } } }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                scales: { x: { grid: { display: false } }, y: { display: false } }, 
+                plugins: { 
+                    legend: { position: 'bottom', labels: { boxWidth: 10 } },
+                    datalabels: {
+                        color: 'white',
+                        font: { weight: 'bold', size: 10 },
+                        formatter: (val) => val > 5 ? val : '' // Only show label if value > 5
+                    }
+                } 
+            }
         });
 
-        // 3. DEMOGRAPHICS (Doughnut)
+        // 4. DEMOGRAPHICS (Clean Labels)
         new Chart(document.getElementById('demoChart'), {
             type: 'doughnut',
-            data: { labels: ['Female', 'Male'], datasets: [{ data: [68, 32], backgroundColor: ['#ec4899', '#3b82f6'], borderWidth: 0 }] },
-            options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } }
+            data: { 
+                labels: ['Female', 'Male'], 
+                datasets: [{ 
+                    data: [68, 32], 
+                    backgroundColor: ['#ec4899', '#3b82f6'], 
+                    borderWidth: 0 
+                }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                cutout: '65%', 
+                plugins: { 
+                    legend: { display: false },
+                    datalabels: {
+                        color: 'white',
+                        font: { weight: 'bold' },
+                        formatter: (val, ctx) => {
+                            return ctx.chart.data.labels[ctx.dataIndex] + '\n' + val + '%';
+                        }
+                    }
+                } 
+            }
         });
 
-        // 4. PUBLISHER TYPES (Horizontal Bar)
-        new Chart(document.getElementById('publisherChart'), {
-            type: 'bar',
-            indexAxis: 'y',
+        // 5. SOCIAL MENTIONS SOURCES (Pie Chart with Percentages)
+        new Chart(document.getElementById('sourceChart'), {
+            type: 'pie',
             data: {
-                labels: ['Community', 'Influencers', 'News Media'],
-                datasets: [{ label: 'Mentions', data: [210, 85, 23], backgroundColor: ['#f59e0b', '#8b5cf6', '#64748b'], borderRadius: 4 }]
+                labels: ['Facebook', 'Twitter/X', 'Instagram', 'Web'],
+                datasets: [{ 
+                    data: [65, 25, 8, 2], 
+                    backgroundColor: ['#1877F2', '#000000', '#E4405F', '#64748b'], 
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
             },
-            options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } },
+                    datalabels: {
+                        color: '#fff',
+                        font: { weight: 'bold' },
+                        formatter: (val) => val + '%'
+                    }
+                } 
+            }
         });
     </script>
 </body>
