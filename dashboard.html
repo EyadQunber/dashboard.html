@@ -565,28 +565,65 @@
                 }
             });
 
-            // Sources (UPDATED: Gridlines & Legend)
+            // Sources (UPDATED: Custom Colored Legend)
             new Chart(document.getElementById('sourceChart'), {
                 type: 'bar',
                 indexAxis: 'y',
                 data: {
-                    labels: ['Facebook', 'Twitter/X', 'Insta', 'Web'],
-                    datasets: [{ label: 'Percentage', data: [65, 25, 8, 2], backgroundColor: ['#1877F2', '#000000', '#E4405F', '#64748b'], borderRadius: 4, barThickness: 12 }]
+                    labels: ['Facebook', 'Twitter/X', 'Instagram', 'Web'],
+                    datasets: [{ 
+                        // Note: Label removed here as we generate custom legend below
+                        data: [65, 25, 8, 2], 
+                        backgroundColor: ['#1877F2', '#000000', '#E4405F', '#64748b'], 
+                        borderRadius: 4, 
+                        barThickness: 12 
+                    }]
                 },
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false, 
                     plugins: { 
-                        legend: { display: true, position: 'bottom', labels: { boxWidth: 10, usePointStyle: true, font: { size: 10 } } }, 
-                        datalabels: { anchor: 'end', align: 'end', color: '#64748b', formatter: v => v + '%' } 
+                        legend: { 
+                            display: true, 
+                            position: 'bottom', 
+                            labels: { 
+                                usePointStyle: true, 
+                                boxWidth: 8, 
+                                font: { size: 10 },
+                                // This function creates a legend item for every BAR, not just the dataset
+                                generateLabels: (chart) => {
+                                    const data = chart.data;
+                                    return data.labels.map((label, i) => ({
+                                        text: label,
+                                        fillStyle: data.datasets[0].backgroundColor[i],
+                                        strokeStyle: data.datasets[0].backgroundColor[i],
+                                        hidden: false,
+                                        index: i
+                                    }));
+                                }
+                            },
+                            // Disable default click behavior (hiding bars) since it's one dataset
+                            onClick: null 
+                        }, 
+                        datalabels: { 
+                            anchor: 'end', 
+                            align: 'end', 
+                            color: '#64748b', 
+                            formatter: v => v + '%' 
+                        } 
                     },
                     scales: { 
-                        x: { display: true, grid: { color: '#f1f5f9' }, ticks: { display: false } }, 
-                        y: { grid: { display: false } } 
+                        x: { 
+                            display: true, 
+                            grid: { color: '#f1f5f9' }, 
+                            ticks: { display: false } 
+                        }, 
+                        y: { 
+                            grid: { display: false } 
+                        } 
                     }
                 }
             });
-        });
     </script>
 </body>
 </html>
