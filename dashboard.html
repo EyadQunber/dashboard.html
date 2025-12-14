@@ -26,8 +26,8 @@
                             900: '#0f172a',
                         },
                         brand: {
-                            primary: '#3b82f6', // Intel Blue
-                            accent: '#6366f1',  // Indigo
+                            primary: '#3b82f6', // Owned / Blue
+                            accent: '#8b5cf6',  // Earned / Purple
                             success: '#10b981', 
                             warning: '#f59e0b', 
                             danger: '#ef4444',  
@@ -196,11 +196,11 @@
 
                         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm group hover:border-brand-primary/50 transition-all">
                              <div class="flex justify-between items-start">
-                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Share of Voice</p>
-                                <svg class="w-4 h-4 text-brand-primary opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Share of Impressions</p>
+                                <svg class="w-4 h-4 text-brand-primary opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                             </div>
-                            <h3 class="text-3xl font-bold text-slate-800 mt-2">62%</h3>
-                            <p class="text-xs text-green-600 mt-1 font-medium">Dominant in sector</p>
+                            <h3 class="text-3xl font-bold text-slate-800 mt-2">1.4M</h3>
+                            <p class="text-xs text-green-600 mt-1 font-medium">Dominant in sector (62%)</p>
                         </div>
                     </div>
 
@@ -209,11 +209,11 @@
                             <div class="flex justify-between items-center mb-6">
                                 <div>
                                     <h3 class="font-bold text-slate-800 text-sm">Mention Velocity</h3>
-                                    <p class="text-xs text-slate-400">Volume over last 7 days</p>
+                                    <p class="text-xs text-slate-400">Owned vs. Earned Media (Last 7 Days)</p>
                                 </div>
-                                <div class="flex items-center space-x-3 text-xs">
-                                    <div class="flex items-center"><span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span> Owned</div>
-                                    <div class="flex items-center"><span class="w-2 h-2 rounded-full bg-purple-500 mr-2"></span> Earned</div>
+                                <div class="flex items-center space-x-4 text-xs">
+                                    <div class="flex items-center px-2 py-1 bg-blue-50 border border-blue-100 rounded"><span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span> Owned</div>
+                                    <div class="flex items-center px-2 py-1 bg-purple-50 border border-purple-100 rounded"><span class="w-2 h-2 rounded-full bg-purple-500 mr-2"></span> Earned</div>
                                 </div>
                             </div>
                             <div class="h-64 chart-container">
@@ -481,19 +481,45 @@
                 plugins: [gaugeNeedle]
             });
 
-            // Velocity Chart
+            // Velocity Chart (UPDATED: Owned vs Earned)
             const ctxV = document.getElementById('velocityChart').getContext('2d');
-            const grad = ctxV.createLinearGradient(0, 0, 0, 300);
-            grad.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
-            grad.addColorStop(1, 'rgba(59, 130, 246, 0)');
+            
+            // Gradients
+            const gradOwned = ctxV.createLinearGradient(0, 0, 0, 300);
+            gradOwned.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
+            gradOwned.addColorStop(1, 'rgba(59, 130, 246, 0)');
+
+            const gradEarned = ctxV.createLinearGradient(0, 0, 0, 300);
+            gradEarned.addColorStop(0, 'rgba(139, 92, 246, 0.2)');
+            gradEarned.addColorStop(1, 'rgba(139, 92, 246, 0)');
 
             new Chart(ctxV, {
                 type: 'line',
                 data: {
                     labels: ['Dec 06', 'Dec 07', 'Dec 08', 'Dec 09', 'Dec 10', 'Dec 11', 'Dec 12'],
                     datasets: [
-                        { label: 'Total Volume', data: [120, 150, 450, 200, 300, 1800, 1600], borderColor: '#3b82f6', backgroundColor: grad, fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4 },
-                        { label: 'Projected', data: [null, null, null, null, null, 1800, 2100], borderColor: '#94a3b8', borderDash: [5,5], tension: 0.4, borderWidth: 2, pointRadius: 0 }
+                        { 
+                            label: 'Owned', 
+                            data: [120, 150, 450, 200, 300, 400, 350], 
+                            borderColor: '#3b82f6', 
+                            backgroundColor: gradOwned, 
+                            fill: true, 
+                            tension: 0.4, 
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            pointHoverRadius: 4
+                        },
+                        { 
+                            label: 'Earned', 
+                            data: [200, 250, 300, 280, 320, 1400, 1200], // Simulating the viral spike
+                            borderColor: '#8b5cf6', 
+                            backgroundColor: gradEarned, 
+                            fill: true, 
+                            tension: 0.4, 
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            pointHoverRadius: 4
+                        }
                     ]
                 },
                 options: { 
@@ -539,19 +565,25 @@
                 }
             });
 
-            // Sources
+            // Sources (UPDATED: Gridlines & Legend)
             new Chart(document.getElementById('sourceChart'), {
                 type: 'bar',
                 indexAxis: 'y',
                 data: {
                     labels: ['Facebook', 'Twitter/X', 'Insta', 'Web'],
-                    datasets: [{ data: [65, 25, 8, 2], backgroundColor: ['#1877F2', '#000000', '#E4405F', '#64748b'], borderRadius: 4, barThickness: 12 }]
+                    datasets: [{ label: 'Percentage', data: [65, 25, 8, 2], backgroundColor: ['#1877F2', '#000000', '#E4405F', '#64748b'], borderRadius: 4, barThickness: 12 }]
                 },
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false, 
-                    plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'end', color: '#64748b', formatter: v => v + '%' } },
-                    scales: { x: { display: false }, y: { grid: { display: false } } }
+                    plugins: { 
+                        legend: { display: true, position: 'bottom', labels: { boxWidth: 10, usePointStyle: true, font: { size: 10 } } }, 
+                        datalabels: { anchor: 'end', align: 'end', color: '#64748b', formatter: v => v + '%' } 
+                    },
+                    scales: { 
+                        x: { display: true, grid: { color: '#f1f5f9' }, ticks: { display: false } }, 
+                        y: { grid: { display: false } } 
+                    }
                 }
             });
         });
