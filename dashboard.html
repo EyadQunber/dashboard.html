@@ -67,8 +67,8 @@
         <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden border border-slate-200">
             <div class="bg-slate-900 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
                 <div>
-                    <h3 class="font-bold text-white text-lg">Configuration & Topics</h3>
-                    <p class="text-xs text-slate-400">Manage tracked brands and billing</p>
+                    <h3 class="font-bold text-white text-lg">Platform Configuration</h3>
+                    <p class="text-xs text-slate-400">Manage tracked projects and sub-topics</p>
                 </div>
                 <button @click="showSettingsModal = false" class="text-slate-400 hover:text-white">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -79,74 +79,63 @@
                 <div class="mb-8">
                     <div class="flex justify-between items-end mb-2">
                         <span class="text-sm font-bold text-slate-700 uppercase tracking-wide">Topic Quota (Plan: Enterprise)</span>
-                        <span class="text-sm font-bold text-brand-primary">3 / 5 Active</span>
+                        <span class="text-sm font-bold text-brand-primary">3 / 3 Active (Full)</span>
                     </div>
                     <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-                        <div class="bg-brand-primary h-3 rounded-full" style="width: 60%"></div>
+                        <div class="bg-brand-primary h-3 rounded-full" style="width: 100%"></div>
                     </div>
-                    <p class="text-xs text-slate-400 mt-2">You are currently tracking 3 high-volume keywords/brands.</p>
+                    <p class="text-xs text-slate-400 mt-2">You are currently using 100% of your allocated tracking slots.</p>
                 </div>
 
                 <div class="space-y-4">
-                    <h4 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">Active Monitored Topics</h4>
                     
-                    <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-lg hover:border-brand-primary/50 transition">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm">
-                                <span class="w-4 h-4 rounded-full bg-brand-primary"></span>
+                    <div class="border border-slate-200 rounded-xl overflow-hidden">
+                        <div class="bg-slate-100 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-slate-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                                <span class="font-bold text-slate-700 text-sm">Project: KHCC Regional Benchmarking</span>
                             </div>
-                            <div>
-                                <h5 class="font-bold text-slate-800">KHCC (Jordan)</h5>
-                                <p class="text-xs text-slate-500">Keywords: King Hussein Cancer Center, مركز الحسين</p>
-                            </div>
+                            <span class="text-[10px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full font-bold">Active</span>
                         </div>
-                        <div class="flex items-center space-x-4">
-                            <span class="flex items-center text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100">
-                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2"></span> Live
-                            </span>
-                            <button class="text-slate-400 hover:text-slate-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></button>
-                        </div>
-                    </div>
 
-                    <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-lg hover:border-brand-comp1/50 transition">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm">
-                                <span class="w-4 h-4 rounded-full bg-brand-comp1"></span>
+                        <div class="bg-white p-2 space-y-2">
+                            
+                            <div class="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition group">
+                                <div class="flex items-center space-x-3 pl-2">
+                                    <div class="w-2 h-8 bg-brand-primary rounded-full"></div> <div>
+                                        <h5 class="font-bold text-slate-800 text-sm">KHCC (Jordan)</h5>
+                                        <p class="text-[10px] text-slate-400">Target Brand</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-bold text-green-600 flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5"></span>Monitoring</span>
                             </div>
-                            <div>
-                                <h5 class="font-bold text-slate-800">NCI (Egypt)</h5>
-                                <p class="text-xs text-slate-500">Keywords: National Cancer Institute, المعهد القومي</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <span class="flex items-center text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100">
-                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2"></span> Live
-                            </span>
-                            <button class="text-slate-400 hover:text-slate-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></button>
-                        </div>
-                    </div>
 
-                    <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-lg hover:border-brand-comp2/50 transition">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm">
-                                <span class="w-4 h-4 rounded-full bg-brand-comp2"></span>
+                            <div class="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition group">
+                                <div class="flex items-center space-x-3 pl-2">
+                                    <div class="w-2 h-8 bg-brand-comp1 rounded-full"></div> <div>
+                                        <h5 class="font-bold text-slate-800 text-sm">NCI (Egypt)</h5>
+                                        <p class="text-[10px] text-slate-400">Competitor 1</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-bold text-green-600 flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5"></span>Monitoring</span>
                             </div>
-                            <div>
-                                <h5 class="font-bold text-slate-800">KCC (Kuwait)</h5>
-                                <p class="text-xs text-slate-500">Keywords: Kuwait Cancer Control, مركز الكويت</p>
+
+                            <div class="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition group">
+                                <div class="flex items-center space-x-3 pl-2">
+                                    <div class="w-2 h-8 bg-brand-comp2 rounded-full"></div> <div>
+                                        <h5 class="font-bold text-slate-800 text-sm">KCC (Kuwait)</h5>
+                                        <p class="text-[10px] text-slate-400">Competitor 2</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-bold text-green-600 flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5"></span>Monitoring</span>
                             </div>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <span class="flex items-center text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100">
-                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2"></span> Live
-                            </span>
-                            <button class="text-slate-400 hover:text-slate-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></button>
+
                         </div>
                     </div>
 
                     <button class="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-400 hover:text-brand-primary hover:border-brand-primary hover:bg-blue-50 transition flex items-center justify-center font-bold text-sm">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Add New Tracking Topic (+ $250/mo)
+                        Add New Tracking Topic
                     </button>
                 </div>
             </div>
@@ -228,7 +217,7 @@
             <nav class="flex-1 px-3 py-6 space-y-1">
                 <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Analytics</p>
                 <a href="#" @click.prevent="switchTab('dashboard')" :class="currentTab === 'dashboard' ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'text-slate-400 hover:text-white hover:bg-slate-800'" class="group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200">
-                    <svg class="w-5 h-5 mr-3 transition-colors" :class="currentTab === 'dashboard' ? 'text-white' : 'text-slate-500 group-hover:text-white'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    <svg class="w-5 h-5 mr-3 transition-colors" :class="currentTab === 'dashboard' ? 'text-white' : 'text-slate-500 group-hover:text-white'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     Dashboard
                 </a>
                 <a href="#" @click.prevent="switchTab('mentions')" :class="currentTab === 'mentions' ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'text-slate-400 hover:text-white hover:bg-slate-800'" class="group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200">
