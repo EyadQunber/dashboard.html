@@ -3,546 +3,557 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mirsad Intelligence | Executive Dashboard</title>
+    <title>Mirsad Insights | Intelligence Platform</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'],
+                        arabic: ['Noto Sans Arabic', 'sans-serif']
+                    },
                     colors: {
+                        slate: {
+                            850: '#1e293b',
+                            900: '#0f172a',
+                        },
                         brand: {
-                            dark: '#0f172a',    
-                            primary: '#3b82f6', 
+                            primary: '#3b82f6', // Intel Blue
+                            accent: '#6366f1',  // Indigo
                             success: '#10b981', 
                             warning: '#f59e0b', 
                             danger: '#ef4444',  
-                            light: '#f8fafc'    
                         }
                     }
                 }
             }
         }
+    </script>
+    <style>
+        /* Custom Scrollbar for Data Heavy Views */
+        .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        [x-cloak] { display: none !important; }
+        
+        /* Chart Container Fixes */
+        .chart-container { position: relative; height: 100%; width: 100%; }
+    </style>
+</head>
 
-        function dashboard() {
+<body class="bg-slate-50 text-slate-800 font-sans antialiased h-screen overflow-hidden" 
+      x-data="app()" 
+      x-init="initCharts()">
+
+    <div x-show="isLoading" x-transition.opacity 
+         class="fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center backdrop-blur-sm" x-cloak>
+        <div class="bg-white p-4 rounded-lg shadow-xl flex items-center space-x-3">
+            <svg class="animate-spin h-6 w-6 text-brand-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-sm font-medium text-slate-700">Processing real-time signals...</span>
+        </div>
+    </div>
+
+    <div x-show="toast.visible" x-transition:enter="transition ease-out duration-300" 
+         x-transition:enter-start="translate-y-2 opacity-0" x-transition:enter-end="translate-y-0 opacity-100" 
+         x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" 
+         x-transition:leave-end="opacity-0" 
+         class="fixed bottom-5 right-5 bg-slate-800 text-white px-4 py-3 rounded shadow-lg z-50 flex items-center space-x-2" x-cloak>
+        <div class="w-2 h-2 rounded-full bg-green-400"></div>
+        <span class="text-sm" x-text="toast.message"></span>
+    </div>
+
+    <div class="flex h-screen">
+        
+        <aside class="w-64 bg-slate-900 flex flex-col shadow-2xl z-20 flex-shrink-0 transition-all duration-300">
+            <div class="h-16 flex items-center px-6 bg-slate-950 border-b border-slate-800">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-brand-primary rounded flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 012 2h2a2 2 0 012-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    </div>
+                    <div>
+                        <h1 class="text-white font-bold text-lg tracking-tight leading-tight">Mirsad <span class="text-brand-primary font-light">Insights</span></h1>
+                        <p class="text-[10px] text-slate-400 uppercase tracking-wider">Social Intelligence</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 px-3 py-6 space-y-1">
+                <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Analytics</p>
+                
+                <a href="#" @click.prevent="switchTab('dashboard')" 
+                   :class="currentTab === 'dashboard' ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
+                   class="group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200">
+                    <svg class="w-5 h-5 mr-3 transition-colors" :class="currentTab === 'dashboard' ? 'text-white' : 'text-slate-500 group-hover:text-white'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    Dashboard
+                </a>
+
+                <a href="#" @click.prevent="switchTab('mentions')" 
+                   :class="currentTab === 'mentions' ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
+                   class="group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200">
+                    <svg class="w-5 h-5 mr-3 transition-colors" :class="currentTab === 'mentions' ? 'text-white' : 'text-slate-500 group-hover:text-white'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                    Live Mentions
+                    <span class="ml-auto bg-brand-danger text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">9+</span>
+                </a>
+                
+                <a href="#" @click.prevent="switchTab('competitors')" 
+                   :class="currentTab === 'competitors' ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
+                   class="group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200">
+                    <svg class="w-5 h-5 mr-3 transition-colors" :class="currentTab === 'competitors' ? 'text-white' : 'text-slate-500 group-hover:text-white'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    Competitor Analysis
+                </a>
+
+                <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-6 mb-2">Reports</p>
+                <a href="#" @click.prevent="simulateAction('Exporting Weekly Report...')" class="group flex items-center px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
+                    <svg class="w-5 h-5 mr-3 text-slate-500 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Export Data
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-slate-800 bg-slate-950">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 border border-slate-600"></div>
+                    <div>
+                        <p class="text-sm font-bold text-white">Eyad Qunber</p>
+                        <p class="text-xs text-slate-500">Mirsad Admin</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-hidden relative flex flex-col">
+            
+            <header class="bg-white border-b border-slate-200 h-16 flex-shrink-0 flex items-center justify-between px-8 z-10">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center">
+                        <span x-text="pageTitle[currentTab]"></span>
+                        <span class="ml-3 text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded border border-slate-200">LIVE</span>
+                    </h2>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search topics..." class="pl-9 pr-4 py-1.5 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent w-64">
+                        <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <button @click="simulateAction('Refreshed Data Sources')" class="text-slate-500 hover:text-brand-primary transition p-2 rounded-full hover:bg-slate-50">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    </button>
+                    <button class="bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded shadow hover:bg-slate-800 transition">Settings</button>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto custom-scroll p-8 bg-slate-50/50">
+                
+                <div x-show="currentTab === 'dashboard'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group hover:border-brand-primary/50 transition-all">
+                            <div class="flex justify-between items-start mb-2">
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Brand Sentiment</p>
+                                <span class="bg-green-50 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold border border-green-100">+12%</span>
+                            </div>
+                            <div class="relative h-20 w-full flex justify-center items-center">
+                                <canvas id="bhiChart"></canvas>
+                                <div class="absolute bottom-2 text-center">
+                                    <span class="text-2xl font-bold text-slate-800">8.2</span>
+                                    <span class="text-[10px] text-slate-400 block">Index Score</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm group hover:border-brand-primary/50 transition-all">
+                             <div class="flex justify-between items-start">
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Total Mentions</p>
+                                <svg class="w-4 h-4 text-brand-primary opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+                            </div>
+                            <h3 class="text-3xl font-bold text-slate-800 mt-2">318</h3>
+                            <p class="text-xs text-green-600 mt-1 flex items-center font-medium">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                                45 vs last week
+                            </p>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm group hover:border-brand-primary/50 transition-all">
+                             <div class="flex justify-between items-start">
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Est. Reach</p>
+                                <svg class="w-4 h-4 text-brand-primary opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <h3 class="text-3xl font-bold text-slate-800 mt-2">65.2K</h3>
+                            <p class="text-xs text-slate-500 mt-1">Driven by viral video campaign</p>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm group hover:border-brand-primary/50 transition-all">
+                             <div class="flex justify-between items-start">
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Share of Voice</p>
+                                <svg class="w-4 h-4 text-brand-primary opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                            </div>
+                            <h3 class="text-3xl font-bold text-slate-800 mt-2">62%</h3>
+                            <p class="text-xs text-green-600 mt-1 font-medium">Dominant in sector</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="flex justify-between items-center mb-6">
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-sm">Mention Velocity</h3>
+                                    <p class="text-xs text-slate-400">Volume over last 7 days</p>
+                                </div>
+                                <div class="flex items-center space-x-3 text-xs">
+                                    <div class="flex items-center"><span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span> Owned</div>
+                                    <div class="flex items-center"><span class="w-2 h-2 rounded-full bg-purple-500 mr-2"></span> Earned</div>
+                                </div>
+                            </div>
+                            <div class="h-64 chart-container">
+                                <canvas id="velocityChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-slate-800 text-sm mb-1">Sentiment by Platform</h3>
+                            <p class="text-xs text-slate-400 mb-6">Positive vs Negative ratio</p>
+                            <div class="h-64 chart-container">
+                                <canvas id="platformSentimentChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        
+                        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col h-[500px]">
+                            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-xl">
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-sm">Mentions Stream</h3>
+                                    <p class="text-[10px] text-slate-400">Context: KHCC & Healthcare</p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button @click="filter = 'all'" :class="filter === 'all' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 border border-slate-200'" class="px-3 py-1 text-[10px] font-medium rounded transition">All</button>
+                                    <button @click="filter = 'negative'" :class="filter === 'negative' ? 'bg-red-500 text-white' : 'bg-white text-slate-600 border border-slate-200'" class="px-3 py-1 text-[10px] font-medium rounded transition">Risks</button>
+                                </div>
+                            </div>
+                            
+                            <div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-3 bg-slate-50">
+                                <template x-for="post in filteredPosts" :key="post.id">
+                                    <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all cursor-pointer group">
+                                        <div class="flex justify-between items-start">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" :class="getSourceClass(post.source)" x-html="getSourceIcon(post.source)"></div>
+                                                <div>
+                                                    <div class="flex items-center space-x-2">
+                                                        <span class="text-xs font-bold text-slate-900" x-text="post.user"></span>
+                                                        <span class="text-[10px] text-slate-400" x-text="post.handle"></span>
+                                                    </div>
+                                                    <div class="text-[10px] text-slate-400" x-text="post.date"></div>
+                                                </div>
+                                            </div>
+                                            <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide border" 
+                                                :class="{
+                                                    'bg-green-50 text-green-600 border-green-100': post.sentiment === 'positive',
+                                                    'bg-red-50 text-red-600 border-red-100': post.sentiment === 'negative',
+                                                    'bg-slate-50 text-slate-500 border-slate-200': post.sentiment === 'neutral'
+                                                }" 
+                                                x-text="post.sentiment">
+                                            </span>
+                                        </div>
+                                        <p class="mt-3 text-sm text-slate-600 font-arabic leading-relaxed" x-html="post.content"></p>
+                                        <div class="mt-3 flex items-center space-x-4 text-[10px] text-slate-400 border-t border-slate-50 pt-2 group-hover:border-slate-100 transition-colors">
+                                            <span class="flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v7.333z"/></svg> <span x-text="post.likes"></span></span>
+                                            <span class="flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/></svg> <span x-text="post.shares"></span></span>
+                                            <span class="ml-auto font-medium text-brand-primary" x-text="post.engagement"></span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                                <h3 class="font-bold text-slate-800 text-sm mb-4">Audience Demographics</h3>
+                                <div class="h-48 chart-container flex justify-center">
+                                    <canvas id="demoChart"></canvas>
+                                </div>
+                                <div class="mt-4 flex justify-center space-x-4">
+                                    <div class="flex items-center"><span class="w-2 h-2 bg-pink-500 rounded-full mr-1.5"></span><span class="text-xs font-bold text-slate-600">Female (68%)</span></div>
+                                    <div class="flex items-center"><span class="w-2 h-2 bg-blue-500 rounded-full mr-1.5"></span><span class="text-xs font-bold text-slate-600">Male (32%)</span></div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                                <h3 class="font-bold text-slate-800 text-sm mb-4">Top Sources</h3>
+                                <div class="h-40 chart-container">
+                                    <canvas id="sourceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div x-show="currentTab === 'mentions'" x-cloak>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center py-20">
+                        <div class="inline-block p-4 rounded-full bg-slate-100 mb-4">
+                            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800">Advanced Filtering View</h3>
+                        <p class="text-slate-500 mt-2 mb-6">This module connects to the real-time Firehose API. Use the filter bar to drill down.</p>
+                        <button @click="switchTab('dashboard')" class="text-brand-primary font-bold hover:underline">Back to Dashboard</button>
+                    </div>
+                </div>
+                 <div x-show="currentTab === 'competitors'" x-cloak>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center py-20">
+                        <div class="inline-block p-4 rounded-full bg-slate-100 mb-4">
+                            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 012 2h2a2 2 0 012-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800">Competitor Benchmarking</h3>
+                        <p class="text-slate-500 mt-2">Compare Share of Voice against local market leaders.</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function app() {
             return {
-                sentimentFilter: 'all',
+                currentTab: 'dashboard',
+                filter: 'all',
+                isLoading: false,
+                toast: { visible: false, message: '' },
+                pageTitle: {
+                    dashboard: 'Brand Health Overview',
+                    mentions: 'Mentions Explorer',
+                    competitors: 'Competitor Landscape'
+                },
                 posts: [
                     { 
                         id: 1, 
                         source: 'facebook', 
                         user: 'KHCF & KHCC', 
                         handle: '@KHCFKHCC', 
-                        date: 'Dec 12', 
+                        date: '2h ago', 
                         content: "إبراهيم البطل خلّص آخر جرعة كيماوي... البطل الصغير علّمنا شو يعني شجاعة. ألف الحمدلله على السلامة 🔔💛 <span class='block mt-2 text-brand-primary'>#SuccessStory #Hope</span>", 
-                        sentiment: 'positive',
-                        engagement: 'High',
-                        likes: '777',
-                        shares: '209'
+                        sentiment: 'positive', engagement: 'High', likes: '777', shares: '209' 
                     },
                     { 
                         id: 2, 
                         source: 'twitter', 
                         user: 'Muna AbuSulayman', 
                         handle: '@abusulayman', 
-                        date: 'Oct 30', 
-                        content: "سعدت بدعوتي لزيارة <span class='font-bold text-gray-900'>مركز الحسين للسرطان</span>. فخورة بوجود هذا الصرح الطبي المتميز. 🇯🇴", 
-                        sentiment: 'positive',
-                        engagement: 'Viral',
-                        likes: '1.2k',
-                        shares: '20.7k Views'
+                        date: '4h ago', 
+                        content: "سعدت بدعوتي لزيارة <span class='font-bold text-slate-900'>مركز الحسين للسرطان</span>. فخورة بوجود هذا الصرح الطبي المتميز في عالمنا العربي. 🇯🇴", 
+                        sentiment: 'positive', engagement: 'Viral', likes: '1.2k', shares: '20.7k' 
                     },
                     { 
                         id: 3, 
                         source: 'facebook', 
-                        user: 'Naser Q Qaqish', 
+                        user: 'Naser Q. Qaqish', 
                         handle: 'Top Fan', 
-                        date: 'Dec 09', 
-                        content: "ضحك على الناس يعني الي عمره اقل من ستين سنه ما اله الحق يتعالج؟ قرار غير عادل. <span class='font-bold text-gray-900'>#Insurance_Policy</span>", 
-                        sentiment: 'negative',
-                        engagement: 'Medium',
-                        likes: '45',
-                        shares: '12'
+                        date: '6h ago', 
+                        content: "عندي استفسار بخصوص تجديد الإعفاء، الموقع الالكتروني ما عم بفتح معي من الصبح. يرجى المساعدة. <span class='font-bold text-slate-900'>#Help</span>", 
+                        sentiment: 'negative', engagement: 'Medium', likes: '45', shares: '12' 
                     },
                     { 
                         id: 4, 
                         source: 'web', 
                         user: 'Al Mamlaka TV', 
                         handle: 'News Source', 
-                        date: 'Dec 06', 
-                        content: "إطلاق بطاقات التأمين الحكومي للعلاج في مركز الحسين للسرطان.", 
-                        sentiment: 'neutral',
-                        engagement: 'Medium',
-                        likes: '890',
-                        shares: '1.2k'
+                        date: '1d ago', 
+                        content: "إطلاق مبادرة جديدة لدعم الصحة النفسية لمرضى السرطان في الأردن.", 
+                        sentiment: 'neutral', engagement: 'Medium', likes: '890', shares: '1.2k' 
                     },
                     { 
                         id: 5, 
                         source: 'twitter', 
                         user: 'AraBella', 
                         handle: '@AraBellaa_962', 
-                        date: 'Jan 05', 
-                        content: "بأيدي وعقول أردنية، مركز الحسين يجري أول عملية نوعية لأورام الدماغ باستخدام الليزر والروبوت. 🧠🤖", 
-                        sentiment: 'positive',
-                        engagement: 'High',
-                        likes: '2.1k',
-                        shares: '540'
+                        date: '1d ago', 
+                        content: "بأيدي وعقول أردنية، مركز الحسين يجري أول عملية نوعية لأورام الدماغ باستخدام الليزر والروبوت. 🧠🤖 إنجاز عظيم!", 
+                        sentiment: 'positive', engagement: 'High', likes: '2.1k', shares: '540' 
                     }
                 ],
                 get filteredPosts() { 
-                    return this.sentimentFilter === 'all' 
-                        ? this.posts 
-                        : this.posts.filter(p => p.sentiment === this.sentimentFilter);
+                    return this.filter === 'all' ? this.posts : this.posts.filter(p => p.sentiment === this.filter);
+                },
+                switchTab(tab) {
+                    this.isLoading = true;
+                    setTimeout(() => {
+                        this.currentTab = tab;
+                        this.isLoading = false;
+                    }, 600); // Simulate network latency
+                },
+                simulateAction(msg) {
+                    this.isLoading = true;
+                    setTimeout(() => {
+                        this.isLoading = false;
+                        this.showToast(msg);
+                    }, 1200);
+                },
+                showToast(message) {
+                    this.toast.message = message;
+                    this.toast.visible = true;
+                    setTimeout(() => { this.toast.visible = false; }, 3000);
                 },
                 getSourceIcon(source) {
                     const icons = {
-                        twitter: '<svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
-                        facebook: '<svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
-                        web: '<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>'
+                        twitter: '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
+                        facebook: '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
+                        web: '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>'
                     };
                     return icons[source] || icons.web;
                 },
                 getSourceClass(source) {
-                    const classes = { twitter: 'bg-black', facebook: 'bg-blue-600', web: 'bg-gray-500' };
-                    return classes[source] || 'bg-gray-400';
+                    const classes = { twitter: 'bg-black', facebook: 'bg-blue-600', web: 'bg-slate-400' };
+                    return classes[source] || 'bg-slate-400';
+                },
+                initCharts() {
+                    // Logic handled in separate script tag below
                 }
             }
         }
     </script>
-    <style>
-        .feed-scroll::-webkit-scrollbar { width: 4px; }
-        .feed-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        [x-cloak] { display: none !important; }
-    </style>
-</head>
-<body class="bg-brand-light text-slate-800 font-sans antialiased" x-data="dashboard()">
-
-    <div class="flex h-screen overflow-hidden">
-        
-        <aside class="w-64 bg-brand-dark flex flex-col shadow-2xl z-20 hidden md:flex">
-            <div class="h-16 flex items-center px-6 bg-slate-900/50 border-b border-slate-800">
-                <div class="text-white font-bold text-xl tracking-tight">
-                    Mirsad <span class="text-brand-primary font-light">Intel.</span>
-                </div>
-            </div>
-            <nav class="flex-1 px-4 py-6 space-y-2">
-                <a href="#" class="flex items-center px-4 py-3 text-white bg-brand-primary/20 rounded-lg border-l-4 border-brand-primary">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 012 2h2a2 2 0 012-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                    Dashboard
-                </a>
-                <a href="#" class="flex items-center px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    Influencers
-                </a>
-                <a href="#" class="flex items-center px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
-                    Mentions
-                </a>
-            </nav>
-        </aside>
-
-        <main class="flex-1 overflow-y-auto relative bg-slate-50">
-            <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
-                <div>
-                    <h2 class="text-lg font-bold text-slate-800">KHCC Brand Intelligence</h2>
-                    <p class="text-xs text-slate-500">Data Source: Social & Web • Period: Last 90 Days</p>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <button class="bg-brand-primary text-white text-xs font-bold px-4 py-2 rounded shadow hover:bg-blue-600 transition">Download PDF</button>
-                    <div class="h-8 w-8 rounded-full bg-slate-200 border border-slate-300"></div>
-                </div>
-            </header>
-
-            <div class="p-8 max-w-7xl mx-auto space-y-6">
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                        <div class="flex justify-between items-center mb-2">
-                            <p class="text-xs font-bold text-slate-400 uppercase">Brand Health Index</p>
-                            <span class="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold">Excellent</span>
-                        </div>
-                        <div class="relative h-24 flex justify-center items-end">
-                            <canvas id="bhiChart"></canvas>
-                            <div class="absolute bottom-0 mb-[-5px] flex flex-col items-center">
-                                <span class="text-3xl font-bold text-slate-800">0.8</span>
-                            </div>
-                        </div>
-                        <p class="text-center text-[10px] text-slate-400 mt-2">Loved on the Internet!</p>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                         <div>
-                            <p class="text-xs font-bold text-slate-400 uppercase">Total Mentions</p>
-                            <h3 class="text-3xl font-bold text-slate-800 mt-2">318</h3>
-                        </div>
-                        <p class="text-xs text-slate-400 mt-2">↑ 45 from last period</p>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                         <div>
-                            <p class="text-xs font-bold text-slate-400 uppercase">Est. Reach</p>
-                            <h3 class="text-3xl font-bold text-slate-800 mt-2">65.2K</h3>
-                        </div>
-                        <p class="text-xs text-slate-400 mt-2">Driven by Viral Video</p>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                         <div>
-                            <p class="text-xs font-bold text-slate-400 uppercase">Engagement Rate</p>
-                            <h3 class="text-3xl font-bold text-slate-800 mt-2">4.8%</h3>
-                        </div>
-                        <p class="text-xs text-slate-400 mt-2">High for Healthcare Sector</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-slate-700">Mention Velocity</h3>
-                            <div class="flex items-center space-x-2 text-xs">
-                                <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-blue-500 mr-1"></span> Owned</span>
-                                <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-purple-500 mr-1"></span> Earned</span>
-                            </div>
-                        </div>
-                        <div class="h-64">
-                            <canvas id="velocityChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-700 mb-4">Sentiment by Platform</h3>
-                        <div class="h-64">
-                            <canvas id="platformSentimentChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-700 mb-2">Demographics</h3>
-                        <p class="text-xs text-slate-400 mb-4">Inferred from Usernames</p>
-                        <div class="h-48 relative flex justify-center">
-                            <canvas id="demoChart"></canvas>
-                        </div>
-                        <div class="mt-2 flex justify-center space-x-4">
-                            <div class="flex items-center"><span class="w-3 h-3 bg-pink-500 rounded-full mr-1"></span><span class="text-xs font-bold text-slate-600">Female</span></div>
-                            <div class="flex items-center"><span class="w-3 h-3 bg-blue-500 rounded-full mr-1"></span><span class="text-xs font-bold text-slate-600">Male</span></div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-700 mb-4">Social Mentions Sources</h3>
-                        <div class="h-48">
-                            <canvas id="sourceChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-700 mb-4">Brand Pillar Impact</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span class="font-medium">Hope & Survival</span>
-                                    <span class="font-bold">52%</span>
-                                </div>
-                                <div class="w-full bg-slate-100 rounded-full h-2">
-                                    <div class="bg-brand-success h-2 rounded-full" style="width: 52%"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span class="font-medium">Humanity & Compassion</span>
-                                    <span class="font-bold">23%</span>
-                                </div>
-                                <div class="w-full bg-slate-100 rounded-full h-2">
-                                    <div class="bg-blue-400 h-2 rounded-full" style="width: 23%"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span class="font-medium">Medical Excellence</span>
-                                    <span class="font-bold">15%</span>
-                                </div>
-                                <div class="w-full bg-slate-100 rounded-full h-2">
-                                    <div class="bg-slate-600 h-2 rounded-full" style="width: 15%"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span class="font-medium">National/Institutional</span>
-                                    <span class="font-bold">10%</span>
-                                </div>
-                                <div class="w-full bg-slate-100 rounded-full h-2">
-                                    <div class="bg-amber-400 h-2 rounded-full" style="width: 10%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                        <div class="p-5 border-b border-slate-100 bg-slate-50">
-                            <h3 class="font-bold text-slate-700">Top Influencers</h3>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm text-left">
-                                <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b">
-                                    <tr>
-                                        <th class="px-4 py-3">Name</th>
-                                        <th class="px-4 py-3">Impact</th>
-                                        <th class="px-4 py-3">Role</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100">
-                                    <tr class="hover:bg-slate-50">
-                                        <td class="px-4 py-3 font-medium text-slate-800">Muna AbuSulayman</td>
-                                        <td class="px-4 py-3 text-brand-primary font-bold">20.7K Views</td>
-                                        <td class="px-4 py-3 text-xs"><span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded">Regional Influencer</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50">
-                                        <td class="px-4 py-3 font-medium text-slate-800">AraBella News</td>
-                                        <td class="px-4 py-3 text-brand-primary font-bold">2.1K Views</td>
-                                        <td class="px-4 py-3 text-xs"><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Media</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50">
-                                        <td class="px-4 py-3 font-medium text-slate-800">Razan Ayasra</td>
-                                        <td class="px-4 py-3 text-green-600 font-bold">15 Comments</td>
-                                        <td class="px-4 py-3 text-xs"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded">Super Fan</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50">
-                                        <td class="px-4 py-3 font-medium text-slate-800">Sereen Al-Tbakhi</td>
-                                        <td class="px-4 py-3 text-green-600 font-bold">Patient Mom</td>
-                                        <td class="px-4 py-3 text-xs"><span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded">Community</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col h-[400px]">
-                        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                            <h3 class="font-bold text-slate-700">Mentions Stream</h3>
-                            <div class="flex space-x-2">
-                                <button @click="sentimentFilter = 'all'" :class="sentimentFilter === 'all' ? 'bg-brand-primary text-white shadow' : 'bg-white text-slate-600 border'" class="px-3 py-1 text-xs rounded transition">All</button>
-                                <button @click="sentimentFilter = 'negative'" :class="sentimentFilter === 'negative' ? 'bg-brand-danger text-white shadow' : 'bg-white text-slate-600 border'" class="px-3 py-1 text-xs rounded transition">Risks</button>
-                            </div>
-                        </div>
-                        <div class="flex-1 overflow-y-auto feed-scroll p-4 space-y-3">
-                            <template x-for="post in filteredPosts" :key="post.id">
-                                <div class="bg-white p-4 rounded-lg border border-slate-100 shadow-sm hover:shadow-md transition-all">
-                                    <div class="flex justify-between items-start">
-                                        <div class="flex items-center space-x-3">
-                                            <div class="w-8 h-8 rounded-full flex items-center justify-center shadow-sm" :class="getSourceClass(post.source)" x-html="getSourceIcon(post.source)"></div>
-                                            <div>
-                                                <div class="flex items-center space-x-2">
-                                                    <span class="text-sm font-bold text-slate-800" x-text="post.user"></span>
-                                                    <span class="text-xs text-slate-400" x-text="post.handle"></span>
-                                                </div>
-                                                <div class="text-[10px] text-slate-400" x-text="post.date"></div>
-                                            </div>
-                                        </div>
-                                        <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide border" 
-                                            :class="{
-                                                'bg-green-50 text-green-600 border-green-100': post.sentiment === 'positive',
-                                                'bg-red-50 text-red-600 border-red-100': post.sentiment === 'negative',
-                                                'bg-slate-50 text-slate-600 border-slate-200': post.sentiment === 'neutral'
-                                            }" 
-                                            x-text="post.sentiment">
-                                        </span>
-                                    </div>
-                                    <p class="mt-2 text-sm text-slate-600" x-html="post.content"></p>
-                                    <div class="mt-3 flex items-center space-x-4 text-xs text-slate-400 border-t border-slate-50 pt-2">
-                                        <span x-text="post.likes + ' Likes'"></span>
-                                        <span x-text="post.shares + ' Shares'"></span>
-                                        <span class="ml-auto text-slate-300" x-text="'Eng: ' + post.engagement"></span>
-                                    </div>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
 
     <script>
-        Chart.register(ChartDataLabels);
-        Chart.defaults.font.family = "'Inter', sans-serif";
-        Chart.defaults.color = '#64748b';
+        // CHART INITIALIZATION
+        document.addEventListener('alpine:init', () => {
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#64748b';
+            
+            // 1. GAUGE NEEDLE PLUGIN
+            const gaugeNeedle = {
+                id: 'gaugeNeedle',
+                afterDatasetDraw(chart) {
+                    const { ctx, chartArea: { width, height } } = chart;
+                    ctx.save();
+                    const value = 0.8; 
+                    const angle = Math.PI + (Math.PI * value);
+                    const cx = width / 2;
+                    const cy = height - 6;
 
-        // 1. BRAND HEALTH INDEX (GAUGE CHART)
-        const ctxBHI = document.getElementById('bhiChart').getContext('2d');
-        
-        // Custom plugin to draw the needle
-        const gaugeNeedle = {
-            id: 'gaugeNeedle',
-            afterDatasetDraw(chart, args, options) {
-                const { ctx, config, data, chartArea: { top, bottom, left, right, width, height } } = chart;
-                ctx.save();
-                
-                // Needle Value (0.8 mapped to angle)
-                const value = 0.8;
-                const angle = Math.PI + (Math.PI * value); 
-
-                const cx = width / 2;
-                const cy = height - 10; // Adjust based on chart cutout
-
-                // Draw Needle
-                ctx.translate(cx, cy);
-                ctx.rotate(angle);
-                ctx.beginPath();
-                ctx.moveTo(0, -2);
-                ctx.lineTo(height - 20, 0); // Length
-                ctx.lineTo(0, 2);
-                ctx.fillStyle = '#3b82f6'; // Brand Blue Needle
-                ctx.fill();
-                
-                // Draw Pivot Circle
-                ctx.rotate(-angle);
-                ctx.beginPath();
-                ctx.arc(0, 0, 5, 0, 10);
-                ctx.fillStyle = '#3b82f6';
-                ctx.fill();
-                ctx.restore();
-            }
-        };
-
-        new Chart(ctxBHI, {
-            type: 'doughnut',
-            data: {
-                labels: ['Bad', 'Average', 'Good', 'Excellent'],
-                datasets: [{
-                    data: [0.2, 0.2, 0.2, 0.4],
-                    backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
-                    borderWidth: 0,
-                    needleValue: 0.8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                rotation: -90,
-                circumference: 180,
-                cutout: '85%',
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: false },
-                    datalabels: { display: false } // Hide labels on the gauge ring itself
+                    ctx.translate(cx, cy);
+                    ctx.rotate(angle);
+                    ctx.beginPath();
+                    ctx.moveTo(0, -3);
+                    ctx.lineTo(height - 25, 0);
+                    ctx.lineTo(0, 3);
+                    ctx.fillStyle = '#1e293b';
+                    ctx.fill();
+                    ctx.restore();
+                    
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, 4, 0, 10);
+                    ctx.fillStyle = '#1e293b';
+                    ctx.fill();
                 }
-            },
-            plugins: [gaugeNeedle]
-        });
+            };
 
-        // 2. VELOCITY CHART
-        const ctxVelocity = document.getElementById('velocityChart').getContext('2d');
-        const gradBlue = ctxVelocity.createLinearGradient(0, 0, 0, 300);
-        gradBlue.addColorStop(0, 'rgba(59, 130, 246, 0.2)'); gradBlue.addColorStop(1, 'rgba(59, 130, 246, 0)');
-        const gradPurple = ctxVelocity.createLinearGradient(0, 0, 0, 300);
-        gradPurple.addColorStop(0, 'rgba(168, 85, 247, 0.2)'); gradPurple.addColorStop(1, 'rgba(168, 85, 247, 0)');
+            // BHI Chart
+            new Chart(document.getElementById('bhiChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Bad', 'Average', 'Good', 'Excellent'],
+                    datasets: [{
+                        data: [20, 20, 20, 40],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    rotation: -90,
+                    circumference: 180,
+                    cutout: '80%',
+                    plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { display: false } }
+                },
+                plugins: [gaugeNeedle]
+            });
 
-        new Chart(ctxVelocity, {
-            type: 'line',
-            data: {
-                labels: ['Dec 06', 'Dec 07', 'Dec 08', 'Dec 09', 'Dec 10', 'Dec 11', 'Dec 12'],
-                datasets: [
-                    { label: 'Owned', data: [120, 150, 450, 200, 300, 1800, 1600], borderColor: '#3b82f6', backgroundColor: gradBlue, fill: true, tension: 0.4, borderWidth: 2 },
-                    { label: 'Earned', data: [200, 250, 300, 280, 320, 500, 450], borderColor: '#a855f7', backgroundColor: gradPurple, fill: true, tension: 0.4, borderWidth: 2 }
-                ]
-            },
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
-                plugins: { 
-                    legend: { display: false },
-                    datalabels: { display: false } // No labels on line chart to avoid clutter
-                }, 
-                scales: { x: { grid: { display: false } }, y: { grid: { borderDash: [4, 4] }, beginAtZero: true } } 
-            }
-        });
+            // Velocity Chart
+            const ctxV = document.getElementById('velocityChart').getContext('2d');
+            const grad = ctxV.createLinearGradient(0, 0, 0, 300);
+            grad.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
+            grad.addColorStop(1, 'rgba(59, 130, 246, 0)');
 
-        // 3. SENTIMENT BY PLATFORM (Labels Enabled)
-        new Chart(document.getElementById('platformSentimentChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Facebook', 'Twitter', 'Web/News'],
-                datasets: [
-                    { label: 'Positive', data: [195, 30, 5], backgroundColor: '#10b981', stack: 'Stack 0' },
-                    { label: 'Neutral', data: [10, 15, 10], backgroundColor: '#cbd5e1', stack: 'Stack 0' },
-                    { label: 'Negative', data: [25, 5, 0], backgroundColor: '#ef4444', stack: 'Stack 0' }
-                ]
-            },
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
-                scales: { x: { grid: { display: false } }, y: { display: false } }, 
-                plugins: { 
-                    legend: { position: 'bottom', labels: { boxWidth: 10 } },
-                    datalabels: {
-                        color: 'white',
-                        font: { weight: 'bold', size: 10 },
-                        formatter: (val) => val > 5 ? val : '' // Only show label if value > 5
-                    }
-                } 
-            }
-        });
+            new Chart(ctxV, {
+                type: 'line',
+                data: {
+                    labels: ['Dec 06', 'Dec 07', 'Dec 08', 'Dec 09', 'Dec 10', 'Dec 11', 'Dec 12'],
+                    datasets: [
+                        { label: 'Total Volume', data: [120, 150, 450, 200, 300, 1800, 1600], borderColor: '#3b82f6', backgroundColor: grad, fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4 },
+                        { label: 'Projected', data: [null, null, null, null, null, 1800, 2100], borderColor: '#94a3b8', borderDash: [5,5], tension: 0.4, borderWidth: 2, pointRadius: 0 }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, datalabels: { display: false } },
+                    scales: { x: { grid: { display: false } }, y: { grid: { borderDash: [4, 4] } } },
+                    interaction: { mode: 'index', intersect: false }
+                }
+            });
 
-        // 4. DEMOGRAPHICS (Clean Labels)
-        new Chart(document.getElementById('demoChart'), {
-            type: 'doughnut',
-            data: { 
-                labels: ['Female', 'Male'], 
-                datasets: [{ 
-                    data: [68, 32], 
-                    backgroundColor: ['#ec4899', '#3b82f6'], 
-                    borderWidth: 0 
-                }] 
-            },
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
-                cutout: '65%', 
-                plugins: { 
-                    legend: { display: false },
-                    datalabels: {
-                        color: 'white',
-                        font: { weight: 'bold' },
-                        formatter: (val, ctx) => {
-                            return ctx.chart.data.labels[ctx.dataIndex] + '\n' + val + '%';
-                        }
-                    }
-                } 
-            }
-        });
+            // Sentiment Bar
+            new Chart(document.getElementById('platformSentimentChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Facebook', 'Twitter', 'Instagram', 'Web'],
+                    datasets: [
+                        { label: 'Positive', data: [65, 40, 80, 20], backgroundColor: '#10b981', stack: 'Stack 0', barThickness: 20 },
+                        { label: 'Negative', data: [15, 30, 5, 5], backgroundColor: '#ef4444', stack: 'Stack 0', barThickness: 20 },
+                        { label: 'Neutral', data: [20, 30, 15, 75], backgroundColor: '#e2e8f0', stack: 'Stack 0', barThickness: 20 }
+                    ]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    scales: { x: { grid: { display: false } }, y: { display: false, stacked: true } },
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true } }, datalabels: { display: false } }
+                }
+            });
 
-        // 5. SOCIAL MENTIONS SOURCES (Pie Chart with Percentages)
-        new Chart(document.getElementById('sourceChart'), {
-            type: 'pie',
-            data: {
-                labels: ['Facebook', 'Twitter/X', 'Instagram', 'Web'],
-                datasets: [{ 
-                    data: [65, 25, 8, 2], 
-                    backgroundColor: ['#1877F2', '#000000', '#E4405F', '#64748b'], 
-                    borderWidth: 2,
-                    borderColor: '#ffffff'
-                }]
-            },
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
-                plugins: { 
-                    legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } },
-                    datalabels: {
-                        color: '#fff',
-                        font: { weight: 'bold' },
-                        formatter: (val) => val + '%'
-                    }
-                } 
-            }
+            // Demographics
+            new Chart(document.getElementById('demoChart'), {
+                type: 'doughnut',
+                data: { 
+                    labels: ['Female', 'Male'], 
+                    datasets: [{ data: [68, 32], backgroundColor: ['#ec4899', '#3b82f6'], borderWidth: 0 }] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    cutout: '70%', 
+                    plugins: { legend: { display: false }, datalabels: { color: 'white', font: { weight: 'bold' } } } 
+                }
+            });
+
+            // Sources
+            new Chart(document.getElementById('sourceChart'), {
+                type: 'bar',
+                indexAxis: 'y',
+                data: {
+                    labels: ['Facebook', 'Twitter/X', 'Insta', 'Web'],
+                    datasets: [{ data: [65, 25, 8, 2], backgroundColor: ['#1877F2', '#000000', '#E4405F', '#64748b'], borderRadius: 4, barThickness: 12 }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'end', color: '#64748b', formatter: v => v + '%' } },
+                    scales: { x: { display: false }, y: { grid: { display: false } } }
+                }
+            });
         });
     </script>
 </body>
