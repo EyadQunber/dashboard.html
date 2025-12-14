@@ -521,7 +521,7 @@
                         }
                     });
 
-                    // BRAND PILLARS (NEW CHART)
+                    // BRAND PILLARS (FINAL UPDATE: WITH LEGEND)
                     new Chart(document.getElementById('brandPillarsChart'), {
                         type: 'bar',
                         indexAxis: 'y',
@@ -537,15 +537,23 @@
                         options: { 
                             responsive: true, maintainAspectRatio: false, 
                             plugins: { 
-                                legend: { display: false }, 
-                                tooltip: { 
-                                    callbacks: { 
-                                        title: (items) => {
+                                legend: { 
+                                    display: true, position: 'bottom', 
+                                    labels: { 
+                                        usePointStyle: true, boxWidth: 8, font: { size: 9 }, padding: 15,
+                                        generateLabels: (chart) => {
                                             const fullTitles = ['Medical Trust & Clinical Excellence', 'Humanity, Compassion & Emotional Care', 'National Pride & Institutional Credibility', 'Hope, Survival & Life Impact'];
-                                            return fullTitles[items[0].dataIndex];
-                                        } 
+                                            const data = chart.data;
+                                            return data.labels.map((label, i) => ({ 
+                                                text: fullTitles[i], 
+                                                fillStyle: data.datasets[0].backgroundColor[i], 
+                                                strokeStyle: data.datasets[0].backgroundColor[i], 
+                                                hidden: false, index: i 
+                                            }));
+                                        }
                                     } 
-                                },
+                                }, 
+                                tooltip: { enabled: false }, // Legend explains it all now
                                 datalabels: { display: true, anchor: 'end', align: 'end', color: '#64748b', font: { weight: 'bold' }, formatter: v => v + '%' } 
                             },
                             scales: { x: { display: true, max: 60, grid: { color: '#f1f5f9' }, ticks: { display: false } }, y: { grid: { display: false }, ticks: { font: { size: 10, weight: '600' } } } }
