@@ -25,7 +25,7 @@
                         brand: {
                             primary: '#3b82f6', // KHCC (Blue)
                             comp1: '#f97316',   // NCI Egypt (Orange)
-                            comp2: '#14b8a6'    // KCC Kuwait (Seal/Teal)
+                            comp2: '#14b8a6'    // KCC Kuwait (Teal)
                         }
                     }
                 }
@@ -58,7 +58,102 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span class="text-sm font-medium text-slate-700">Connecting to Firehose API...</span>
+            <span class="text-sm font-medium text-slate-700">Syncing Configuration...</span>
+        </div>
+    </div>
+
+    <div x-show="showSettingsModal" x-transition.opacity 
+         class="fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center backdrop-blur-sm" x-cloak>
+        <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden border border-slate-200">
+            <div class="bg-slate-900 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-white text-lg">Configuration & Topics</h3>
+                    <p class="text-xs text-slate-400">Manage tracked brands and billing</p>
+                </div>
+                <button @click="showSettingsModal = false" class="text-slate-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="p-8">
+                <div class="mb-8">
+                    <div class="flex justify-between items-end mb-2">
+                        <span class="text-sm font-bold text-slate-700 uppercase tracking-wide">Topic Quota (Plan: Enterprise)</span>
+                        <span class="text-sm font-bold text-brand-primary">3 / 5 Active</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                        <div class="bg-brand-primary h-3 rounded-full" style="width: 60%"></div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2">You are currently tracking 3 high-volume keywords/brands.</p>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">Active Monitored Topics</h4>
+                    
+                    <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-lg hover:border-brand-primary/50 transition">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm">
+                                <span class="w-4 h-4 rounded-full bg-brand-primary"></span>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-slate-800">KHCC (Jordan)</h5>
+                                <p class="text-xs text-slate-500">Keywords: King Hussein Cancer Center, مركز الحسين</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <span class="flex items-center text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100">
+                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2"></span> Live
+                            </span>
+                            <button class="text-slate-400 hover:text-slate-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-lg hover:border-brand-comp1/50 transition">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm">
+                                <span class="w-4 h-4 rounded-full bg-brand-comp1"></span>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-slate-800">NCI (Egypt)</h5>
+                                <p class="text-xs text-slate-500">Keywords: National Cancer Institute, المعهد القومي</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <span class="flex items-center text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100">
+                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2"></span> Live
+                            </span>
+                            <button class="text-slate-400 hover:text-slate-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-lg hover:border-brand-comp2/50 transition">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm">
+                                <span class="w-4 h-4 rounded-full bg-brand-comp2"></span>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-slate-800">KCC (Kuwait)</h5>
+                                <p class="text-xs text-slate-500">Keywords: Kuwait Cancer Control, مركز الكويت</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <span class="flex items-center text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100">
+                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2"></span> Live
+                            </span>
+                            <button class="text-slate-400 hover:text-slate-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></button>
+                        </div>
+                    </div>
+
+                    <button class="w-full border-2 border-dashed border-slate-300 rounded-lg p-4 text-slate-400 hover:text-brand-primary hover:border-brand-primary hover:bg-blue-50 transition flex items-center justify-center font-bold text-sm">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Add New Tracking Topic (+ $250/mo)
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex justify-end">
+                <button @click="showSettingsModal = false" class="px-6 py-2 bg-slate-800 text-white font-bold rounded-lg shadow hover:bg-slate-900 transition">Close</button>
+            </div>
         </div>
     </div>
 
@@ -166,7 +261,7 @@
                     </h2>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button class="bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded shadow hover:bg-slate-800 transition">Settings</button>
+                    <button @click="showSettingsModal = true" class="bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded shadow hover:bg-slate-800 transition">Settings</button>
                 </div>
             </header>
 
@@ -365,6 +460,7 @@
                 sortBy: 'date',
                 isLoading: false,
                 showCrawlerModal: false,
+                showSettingsModal: false,
                 toast: { visible: false, message: '' },
                 pageTitle: {
                     dashboard: 'Brand Health Overview',
@@ -592,7 +688,7 @@
                         }
                     });
 
-                    // --- COMPETITOR ANALYSIS CHARTS (REFACTORED) ---
+                    // --- COMPETITOR ANALYSIS CHARTS ---
                     
                     const commonDoughnutOptions = {
                         responsive: true, maintainAspectRatio: false, cutout: '65%',
