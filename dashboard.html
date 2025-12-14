@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
@@ -21,13 +21,10 @@
                         arabic: ['Noto Sans Arabic', 'sans-serif']
                     },
                     colors: {
-                        slate: {
-                            850: '#1e293b',
-                            900: '#0f172a',
-                        },
+                        slate: { 850: '#1e293b', 900: '#0f172a' },
                         brand: {
-                            primary: '#3b82f6', // Owned / Blue
-                            accent: '#8b5cf6',  // Earned / Purple
+                            primary: '#3b82f6', 
+                            accent: '#8b5cf6',
                             success: '#10b981', 
                             warning: '#f59e0b', 
                             danger: '#ef4444',  
@@ -44,6 +41,12 @@
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         [x-cloak] { display: none !important; }
         .chart-container { position: relative; height: 100%; width: 100%; }
+        /* Fade in animation */
+        .animate-fade-in-down { animation: fadeInDown 0.5s ease-out; }
+        @keyframes fadeInDown {
+            0% { opacity: 0; transform: translateY(-10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 
@@ -58,22 +61,66 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span class="text-sm font-medium text-slate-700">Processing real-time signals...</span>
+            <span class="text-sm font-medium text-slate-700">Connecting to Firehose API...</span>
         </div>
     </div>
 
-    <div x-show="toast.visible" x-transition:enter="transition ease-out duration-300" 
-         x-transition:enter-start="translate-y-2 opacity-0" x-transition:enter-end="translate-y-0 opacity-100" 
-         x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" 
-         x-transition:leave-end="opacity-0" 
-         class="fixed bottom-5 right-5 bg-slate-800 text-white px-4 py-3 rounded shadow-lg z-50 flex items-center space-x-2" x-cloak>
+    <div x-show="showCrawlerModal" x-transition.opacity 
+         class="fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center backdrop-blur-sm" x-cloak>
+        <div class="bg-white w-full max-w-lg rounded-xl shadow-2xl overflow-hidden border border-slate-200">
+            <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-bold text-slate-800 flex items-center">
+                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2"></div>
+                    Manual Signal Injection
+                </h3>
+                <button @click="showCrawlerModal = false" class="text-slate-400 hover:text-slate-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Content</label>
+                    <textarea x-model="newPost.content" rows="3" class="w-full text-sm border border-slate-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand-primary"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Author</label>
+                        <input x-model="newPost.user" type="text" class="w-full text-sm border border-slate-300 rounded-lg p-2">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Source</label>
+                        <select x-model="newPost.source" class="w-full text-sm border border-slate-300 rounded-lg p-2 bg-white">
+                            <option value="twitter">X / Twitter</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="web">News/Web</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Sentiment</label>
+                    <div class="flex space-x-4">
+                        <label class="flex items-center space-x-2"><input type="radio" x-model="newPost.sentiment" value="positive" class="text-brand-primary"> <span class="text-sm">Positive</span></label>
+                        <label class="flex items-center space-x-2"><input type="radio" x-model="newPost.sentiment" value="negative" class="text-red-500"> <span class="text-sm">Negative</span></label>
+                        <label class="flex items-center space-x-2"><input type="radio" x-model="newPost.sentiment" value="neutral" class="text-slate-500"> <span class="text-sm">Neutral</span></label>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex justify-end space-x-3">
+                <button @click="showCrawlerModal = false" class="px-4 py-2 text-sm text-slate-600 font-medium hover:text-slate-800">Cancel</button>
+                <button @click="addManualPost()" class="px-4 py-2 text-sm bg-brand-primary text-white font-bold rounded-lg shadow hover:bg-blue-600 transition">Inject Signal</button>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="toast.visible" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-2 opacity-0" x-transition:enter-end="translate-y-0 opacity-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed bottom-5 right-5 bg-slate-800 text-white px-4 py-3 rounded shadow-lg z-50 flex items-center space-x-2" x-cloak>
         <div class="w-2 h-2 rounded-full bg-green-400"></div>
         <span class="text-sm" x-text="toast.message"></span>
     </div>
 
     <div class="flex h-screen">
         
-        <aside class="w-64 bg-slate-900 flex flex-col shadow-2xl z-20 flex-shrink-0 transition-all duration-300">
+        <aside class="w-64 bg-slate-900 flex flex-col shadow-2xl z-20 flex-shrink-0">
             <div class="h-16 flex items-center px-6 bg-slate-950 border-b border-slate-800">
                 <div class="flex items-center space-x-2">
                     <div class="w-8 h-8 bg-brand-primary rounded flex items-center justify-center">
@@ -88,36 +135,20 @@
 
             <nav class="flex-1 px-3 py-6 space-y-1">
                 <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Analytics</p>
-                
-                <a href="#" @click.prevent="switchTab('dashboard')" 
-                   :class="currentTab === 'dashboard' ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
-                   class="group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200">
+                <a href="#" @click.prevent="switchTab('dashboard')" :class="currentTab === 'dashboard' ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'text-slate-400 hover:text-white hover:bg-slate-800'" class="group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200">
                     <svg class="w-5 h-5 mr-3 transition-colors" :class="currentTab === 'dashboard' ? 'text-white' : 'text-slate-500 group-hover:text-white'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     Dashboard
                 </a>
-
-                <a href="#" @click.prevent="switchTab('mentions')" 
-                   :class="currentTab === 'mentions' ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
-                   class="group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200">
+                <a href="#" @click.prevent="switchTab('mentions')" :class="currentTab === 'mentions' ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'text-slate-400 hover:text-white hover:bg-slate-800'" class="group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200">
                     <svg class="w-5 h-5 mr-3 transition-colors" :class="currentTab === 'mentions' ? 'text-white' : 'text-slate-500 group-hover:text-white'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
                     Live Mentions
-                    <span class="ml-auto bg-brand-danger text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">9+</span>
+                    <span class="ml-auto bg-brand-danger text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">25+</span>
                 </a>
-                
-                <a href="#" @click.prevent="switchTab('competitors')" 
-                   :class="currentTab === 'competitors' ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
-                   class="group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200">
+                <a href="#" @click.prevent="switchTab('competitors')" :class="currentTab === 'competitors' ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'text-slate-400 hover:text-white hover:bg-slate-800'" class="group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200">
                     <svg class="w-5 h-5 mr-3 transition-colors" :class="currentTab === 'competitors' ? 'text-white' : 'text-slate-500 group-hover:text-white'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                     Competitor Analysis
                 </a>
-
-                <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-6 mb-2">Reports</p>
-                <a href="#" @click.prevent="simulateAction('Exporting Weekly Report...')" class="group flex items-center px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
-                    <svg class="w-5 h-5 mr-3 text-slate-500 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    Export Data
-                </a>
             </nav>
-
             <div class="p-4 border-t border-slate-800 bg-slate-950">
                 <div class="flex items-center space-x-3">
                     <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 border border-slate-600"></div>
@@ -130,7 +161,6 @@
         </aside>
 
         <main class="flex-1 overflow-hidden relative flex flex-col">
-            
             <header class="bg-white border-b border-slate-200 h-16 flex-shrink-0 flex items-center justify-between px-8 z-10">
                 <div>
                     <h2 class="text-lg font-bold text-slate-800 flex items-center">
@@ -139,13 +169,6 @@
                     </h2>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <div class="relative">
-                        <input type="text" placeholder="Search topics..." class="pl-9 pr-4 py-1.5 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent w-64">
-                        <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </div>
-                    <button @click="simulateAction('Refreshed Data Sources')" class="text-slate-500 hover:text-brand-primary transition p-2 rounded-full hover:bg-slate-50">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    </button>
                     <button class="bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded shadow hover:bg-slate-800 transition">Settings</button>
                 </div>
             </header>
@@ -153,160 +176,111 @@
             <div class="flex-1 overflow-y-auto custom-scroll p-8 bg-slate-50/50">
                 
                 <div x-show="currentTab === 'dashboard'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group hover:border-brand-primary/50 transition-all">
-                            <div class="flex justify-between items-start mb-2">
-                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Brand Sentiment</p>
-                                <span class="bg-green-50 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold border border-green-100">+12%</span>
-                            </div>
-                            <div class="relative h-20 w-full flex justify-center items-center">
-                                <canvas id="bhiChart"></canvas>
-                                <div class="absolute bottom-2 text-center">
-                                    <span class="text-2xl font-bold text-slate-800">8.2</span>
-                                    <span class="text-[10px] text-slate-400 block">Index Score</span>
-                                </div>
-                            </div>
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                            <div class="flex justify-between items-start mb-2"><p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Brand Sentiment</p><span class="bg-green-50 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold border border-green-100">+12%</span></div>
+                            <div class="relative h-20 w-full flex justify-center items-center"><canvas id="bhiChart"></canvas><div class="absolute bottom-2 text-center"><span class="text-2xl font-bold text-slate-800">8.2</span><span class="text-[10px] text-slate-400 block">Index Score</span></div></div>
                         </div>
-
-                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm group hover:border-brand-primary/50 transition-all">
-                             <div class="flex justify-between items-start">
-                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Total Mentions</p>
-                                <svg class="w-4 h-4 text-brand-primary opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
-                            </div>
-                            <h3 class="text-3xl font-bold text-slate-800 mt-2">318</h3>
-                            <p class="text-xs text-green-600 mt-1 flex items-center font-medium">
-                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                                45 vs last week
-                            </p>
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                             <div class="flex justify-between items-start"><p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Total Mentions</p><svg class="w-4 h-4 text-brand-primary opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg></div>
+                            <h3 class="text-3xl font-bold text-slate-800 mt-2">1,204</h3>
+                            <p class="text-xs text-green-600 mt-1 flex items-center font-medium"><svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg> 215 vs last week</p>
                         </div>
-
-                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm group hover:border-brand-primary/50 transition-all">
-                             <div class="flex justify-between items-start">
-                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Est. Reach</p>
-                                <svg class="w-4 h-4 text-brand-primary opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </div>
-                            <h3 class="text-3xl font-bold text-slate-800 mt-2">65.2K</h3>
-                            <p class="text-xs text-slate-500 mt-1">Driven by viral video campaign</p>
-                        </div>
-
-                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm group hover:border-brand-primary/50 transition-all">
-                             <div class="flex justify-between items-start">
-                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Share of Impressions</p>
-                                <svg class="w-4 h-4 text-brand-primary opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                            </div>
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                             <div class="flex justify-between items-start"><p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Est. Reach</p><svg class="w-4 h-4 text-brand-primary opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
                             <h3 class="text-3xl font-bold text-slate-800 mt-2">1.4M</h3>
-                            <p class="text-xs text-green-600 mt-1 font-medium">Dominant in sector (62%)</p>
+                            <p class="text-xs text-slate-500 mt-1">Driven by viral patient stories</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                             <div class="flex justify-between items-start"><p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Share of Impressions</p><svg class="w-4 h-4 text-brand-primary opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></div>
+                            <h3 class="text-3xl font-bold text-slate-800 mt-2">62%</h3>
+                            <p class="text-xs text-green-600 mt-1 font-medium">Dominant in Healthcare Sector</p>
                         </div>
                     </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                        <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                            <div class="flex justify-between items-center mb-6">
-                                <div>
-                                    <h3 class="font-bold text-slate-800 text-sm">Mention Velocity</h3>
-                                    <p class="text-xs text-slate-400">Owned vs. Earned Media (Last 7 Days)</p>
-                                </div>
-                                <div class="flex items-center space-x-4 text-xs">
-                                    <div class="flex items-center px-2 py-1 bg-blue-50 border border-blue-100 rounded"><span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span> Owned</div>
-                                    <div class="flex items-center px-2 py-1 bg-purple-50 border border-purple-100 rounded"><span class="w-2 h-2 rounded-full bg-purple-500 mr-2"></span> Earned</div>
-                                </div>
-                            </div>
-                            <div class="h-64 chart-container">
-                                <canvas id="velocityChart"></canvas>
-                            </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                         <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-slate-800 text-sm mb-4">Mention Velocity</h3>
+                            <div class="h-64 chart-container"><canvas id="velocityChart"></canvas></div>
                         </div>
-
                         <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                            <h3 class="font-bold text-slate-800 text-sm mb-1">Sentiment by Platform</h3>
-                            <p class="text-xs text-slate-400 mb-6">Positive vs Negative ratio</p>
-                            <div class="h-64 chart-container">
-                                <canvas id="platformSentimentChart"></canvas>
-                            </div>
+                            <h3 class="font-bold text-slate-800 text-sm mb-4">Sentiment Overview</h3>
+                            <div class="h-64 chart-container"><canvas id="platformSentimentChart"></canvas></div>
                         </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        
-                        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col h-[500px]">
-                            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-xl">
-                                <div>
-                                    <h3 class="font-bold text-slate-800 text-sm">Mentions Stream</h3>
-                                    <p class="text-[10px] text-slate-400">Context: KHCC & Healthcare</p>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button @click="filter = 'all'" :class="filter === 'all' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 border border-slate-200'" class="px-3 py-1 text-[10px] font-medium rounded transition">All</button>
-                                    <button @click="filter = 'negative'" :class="filter === 'negative' ? 'bg-red-500 text-white' : 'bg-white text-slate-600 border border-slate-200'" class="px-3 py-1 text-[10px] font-medium rounded transition">Risks</button>
-                                </div>
-                            </div>
-                            
-                            <div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-3 bg-slate-50">
-                                <template x-for="post in filteredPosts" :key="post.id">
-                                    <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all cursor-pointer group">
-                                        <div class="flex justify-between items-start">
-                                            <div class="flex items-center space-x-3">
-                                                <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" :class="getSourceClass(post.source)" x-html="getSourceIcon(post.source)"></div>
-                                                <div>
-                                                    <div class="flex items-center space-x-2">
-                                                        <span class="text-xs font-bold text-slate-900" x-text="post.user"></span>
-                                                        <span class="text-[10px] text-slate-400" x-text="post.handle"></span>
-                                                    </div>
-                                                    <div class="text-[10px] text-slate-400" x-text="post.date"></div>
-                                                </div>
-                                            </div>
-                                            <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide border" 
-                                                :class="{
-                                                    'bg-green-50 text-green-600 border-green-100': post.sentiment === 'positive',
-                                                    'bg-red-50 text-red-600 border-red-100': post.sentiment === 'negative',
-                                                    'bg-slate-50 text-slate-500 border-slate-200': post.sentiment === 'neutral'
-                                                }" 
-                                                x-text="post.sentiment">
-                                            </span>
-                                        </div>
-                                        <p class="mt-3 text-sm text-slate-600 font-arabic leading-relaxed" x-html="post.content"></p>
-                                        <div class="mt-3 flex items-center space-x-4 text-[10px] text-slate-400 border-t border-slate-50 pt-2 group-hover:border-slate-100 transition-colors">
-                                            <span class="flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v7.333z"/></svg> <span x-text="post.likes"></span></span>
-                                            <span class="flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/></svg> <span x-text="post.shares"></span></span>
-                                            <span class="ml-auto font-medium text-brand-primary" x-text="post.engagement"></span>
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-
-                        <div class="space-y-6">
-                            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                                <h3 class="font-bold text-slate-800 text-sm mb-4">Audience Demographics</h3>
-                                <div class="h-48 chart-container flex justify-center">
-                                    <canvas id="demoChart"></canvas>
-                                </div>
-                                <div class="mt-4 flex justify-center space-x-4">
-                                    <div class="flex items-center"><span class="w-2 h-2 bg-pink-500 rounded-full mr-1.5"></span><span class="text-xs font-bold text-slate-600">Female (68%)</span></div>
-                                    <div class="flex items-center"><span class="w-2 h-2 bg-blue-500 rounded-full mr-1.5"></span><span class="text-xs font-bold text-slate-600">Male (32%)</span></div>
-                                </div>
-                            </div>
-
-                            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                                <h3 class="font-bold text-slate-800 text-sm mb-4">Top Sources</h3>
-                                <div class="h-40 chart-container">
-                                    <canvas id="sourceChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
 
                 <div x-show="currentTab === 'mentions'" x-cloak>
-                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center py-20">
-                        <div class="inline-block p-4 rounded-full bg-slate-100 mb-4">
-                            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="text-2xl font-bold text-slate-800">Live Feed</h3>
+                            <p class="text-sm text-slate-500">Crawling X, Facebook, Instagram & Web News...</p>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-800">Advanced Filtering View</h3>
-                        <p class="text-slate-500 mt-2 mb-6">This module connects to the real-time Firehose API. Use the filter bar to drill down.</p>
-                        <button @click="switchTab('dashboard')" class="text-brand-primary font-bold hover:underline">Back to Dashboard</button>
+                        <button @click="openCrawlerModal()" class="bg-brand-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium shadow flex items-center transition">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            Add Signal (Simulate)
+                        </button>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6 flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4">
+                         <div class="relative flex-1">
+                            <input type="text" placeholder="Search content..." class="w-full pl-9 pr-4 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <div class="flex space-x-2">
+                             <select x-model="sortBy" class="text-sm border border-slate-300 rounded-md py-2 px-3 bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                <option value="date">Sort: Newest</option>
+                                <option value="sentiment">Sort: Sentiment</option>
+                                <option value="source">Sort: Source</option>
+                            </select>
+                            <select x-model="filter" class="text-sm border border-slate-300 rounded-md py-2 px-3 bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                <option value="all">Filter: All</option>
+                                <option value="positive">Positive Only</option>
+                                <option value="negative">Negative Only</option>
+                                <option value="neutral">Neutral Only</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <template x-for="post in sortedAndFilteredPosts" :key="post.id">
+                            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all animate-fade-in-down group">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 mt-1 shadow-sm" :class="getSourceClass(post.source)" x-html="getSourceIcon(post.source)"></div>
+                                        <div>
+                                            <div class="flex items-center space-x-2">
+                                                <h4 class="text-sm font-bold text-slate-900" x-text="post.user"></h4>
+                                                <span class="text-xs text-slate-400" x-text="post.handle"></span>
+                                                <span class="text-xs text-slate-300">•</span>
+                                                <span class="text-xs text-slate-400" x-text="post.date"></span>
+                                            </div>
+                                            <p class="mt-2 text-sm text-slate-700 font-arabic leading-relaxed" dir="auto" x-html="post.content"></p>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col items-end space-y-2">
+                                         <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide border" 
+                                            :class="{
+                                                'bg-green-50 text-green-600 border-green-100': post.sentiment === 'positive',
+                                                'bg-red-50 text-red-600 border-red-100': post.sentiment === 'negative',
+                                                'bg-slate-50 text-slate-500 border-slate-200': post.sentiment === 'neutral'
+                                            }" 
+                                            x-text="post.sentiment">
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center space-x-6 text-xs text-slate-400 pl-14">
+                                    <span class="flex items-center hover:text-brand-primary transition cursor-pointer"><svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg> <span x-text="post.likes"></span></span>
+                                    <span class="flex items-center hover:text-brand-primary transition cursor-pointer"><svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg> <span x-text="post.shares"></span></span>
+                                    <span class="ml-auto flex items-center text-slate-300">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                        Impact: <span class="text-slate-600 font-bold ml-1" x-text="post.engagement"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                 </div>
+
                  <div x-show="currentTab === 'competitors'" x-cloak>
                     <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center py-20">
                         <div class="inline-block p-4 rounded-full bg-slate-100 mb-4">
@@ -326,301 +300,219 @@
             return {
                 currentTab: 'dashboard',
                 filter: 'all',
+                sortBy: 'date',
                 isLoading: false,
+                showCrawlerModal: false,
                 toast: { visible: false, message: '' },
                 pageTitle: {
                     dashboard: 'Brand Health Overview',
                     mentions: 'Mentions Explorer',
                     competitors: 'Competitor Landscape'
                 },
+                newPost: { content: '', user: '', source: 'twitter', sentiment: 'neutral' },
+                
+                // DATASET POPOULATED FROM USER'S PASTE
                 posts: [
-                    { 
-                        id: 1, 
-                        source: 'facebook', 
-                        user: 'KHCF & KHCC', 
-                        handle: '@KHCFKHCC', 
-                        date: '2h ago', 
-                        content: "إبراهيم البطل خلّص آخر جرعة كيماوي... البطل الصغير علّمنا شو يعني شجاعة. ألف الحمدلله على السلامة 🔔💛 <span class='block mt-2 text-brand-primary'>#SuccessStory #Hope</span>", 
-                        sentiment: 'positive', engagement: 'High', likes: '777', shares: '209' 
-                    },
-                    { 
-                        id: 2, 
-                        source: 'twitter', 
-                        user: 'Muna AbuSulayman', 
-                        handle: '@abusulayman', 
-                        date: '4h ago', 
-                        content: "سعدت بدعوتي لزيارة <span class='font-bold text-slate-900'>مركز الحسين للسرطان</span>. فخورة بوجود هذا الصرح الطبي المتميز في عالمنا العربي. 🇯🇴", 
-                        sentiment: 'positive', engagement: 'Viral', likes: '1.2k', shares: '20.7k' 
-                    },
-                    { 
-                        id: 3, 
-                        source: 'facebook', 
-                        user: 'Naser Q. Qaqish', 
-                        handle: 'Top Fan', 
-                        date: '6h ago', 
-                        content: "عندي استفسار بخصوص تجديد الإعفاء، الموقع الالكتروني ما عم بفتح معي من الصبح. يرجى المساعدة. <span class='font-bold text-slate-900'>#Help</span>", 
-                        sentiment: 'negative', engagement: 'Medium', likes: '45', shares: '12' 
-                    },
-                    { 
-                        id: 4, 
-                        source: 'web', 
-                        user: 'Al Mamlaka TV', 
-                        handle: 'News Source', 
-                        date: '1d ago', 
-                        content: "إطلاق مبادرة جديدة لدعم الصحة النفسية لمرضى السرطان في الأردن.", 
-                        sentiment: 'neutral', engagement: 'Medium', likes: '890', shares: '1.2k' 
-                    },
-                    { 
-                        id: 5, 
-                        source: 'twitter', 
-                        user: 'AraBella', 
-                        handle: '@AraBellaa_962', 
-                        date: '1d ago', 
-                        content: "بأيدي وعقول أردنية، مركز الحسين يجري أول عملية نوعية لأورام الدماغ باستخدام الليزر والروبوت. 🧠🤖 إنجاز عظيم!", 
-                        sentiment: 'positive', engagement: 'High', likes: '2.1k', shares: '540' 
-                    }
+                    // X / TWITTER
+                    { id: 101, source: 'twitter', user: 'Dr. Abdulaziz AlJassim', handle: '@DrZ_84', date: 'Dec 10', content: "التشخيص الدقيق لأورام الرئة وفهم وجود طفرات جينية من عدمها يؤدي الى اختيار العلاج المناسب... اختفاء شبه كامل للورم بعد ٣ شهور من العلاج الموجّه وتوفيق من الله.", sentiment: 'positive', engagement: 'High', likes: '3.2k', shares: '1.5k' },
+                    { id: 102, source: 'twitter', user: 'Nabdalbalad - نبض البلد', handle: '@royanabdalbalad', date: 'Dec 02', content: "مدير عام مؤسسة الحسين للسرطان نسرين قطامش: دوامة الإجراءات في مركز الحسين للسرطان تم اختصارها على المريض... تفاصيل بالفيديو.", sentiment: 'positive', engagement: 'Medium', likes: '450', shares: '120' },
+                    { id: 103, source: 'twitter', user: 'Al Mamlaka TV', handle: '@AlMamlakaTV', date: 'Dec 02', content: "وزير الدولة للشؤون الاقتصادية: المواطن الأردني انتقل من رحلة البحث عن واسطة للتأمين إلى الذهاب لتطبيق 'سند' للحصول على بطاقة التأمين.", sentiment: 'neutral', engagement: 'Medium', likes: '890', shares: '230' },
+                    
+                    // WEB / NEWS
+                    { id: 201, source: 'web', user: 'Al Mamlaka TV', handle: 'News', date: '2 weeks ago', content: "إطلاق بطاقات التأمين الحكومي للعلاج في مركز الحسين للسرطان. وتشمل الفئات المستفيدة جميع الأردنيين من عمر 19 عاماً فما دون.", sentiment: 'neutral', engagement: 'Low', likes: '120', shares: '45' },
+                    { id: 202, source: 'web', user: 'Al Ghad Newspaper', handle: 'News', date: '3 hours ago', content: "الدكتور عاصم منصور يحاضر حول التّحديات الأخلاقيّة للأطباء في العصر الرَّقمي ضمن فعاليات اليوم العلمي لأطباء الأسنان الجدد.", sentiment: 'neutral', engagement: 'Low', likes: '85', shares: '10' },
+                    { id: 203, source: 'web', user: 'Al Jazeera Net', handle: 'Global News', date: '6 days ago', content: "مرضى السرطان بالأردن أمام تحول نوعي في تغطية علاجهم. في بلد تتزايد فيه حالات الإصابة بمرض السرطان بوتيرة لافتة...", sentiment: 'positive', engagement: 'High', likes: '5.6k', shares: '2.1k' },
+                    { id: 204, source: 'web', user: 'Public Security Directorate', handle: 'Gov', date: '2 weeks ago', content: "مديرية الأمن العام تنظم حملة تبرع بالدم لصالح مركز الحسين للسرطان.", sentiment: 'positive', engagement: 'Medium', likes: '1.1k', shares: '300' },
+                    { id: 205, source: 'web', user: 'Roya News', handle: 'News', date: '2 weeks ago', content: "الحكومة تطلق خدمة 'بطاقات تأمين رعاية' لعلاج السرطان تمهيدا لتفعيلها مطلع 2026.", sentiment: 'neutral', engagement: 'Medium', likes: '670', shares: '150' },
+
+                    // INSTAGRAM (Main Post & Select Comments)
+                    { id: 301, source: 'instagram', user: 'KHCF & KHCC', handle: '@khcfkhcc', date: '2d ago', content: "إبراهيم البطل خلّص آخر جرعة كيماوي 💛 البطل الصغير… علّمنا شو يعني شجاعة. ألف الحمدلله على السلامة 🔔💛", sentiment: 'positive', engagement: 'Viral', likes: '12.4k', shares: '4.2k' },
+                    { id: 302, source: 'instagram', user: 'Sereen Al-Tbakhi', handle: '@sereen_tb', date: '2d ago', content: "حبيبي برهومة البطل ... و حبيبتي ماما سيرين البطلة اللي كانت معه دايما 🥺❤️", sentiment: 'positive', engagement: 'High', likes: '230', shares: '0' },
+                    { id: 303, source: 'instagram', user: 'Community Member', handle: 'user123', date: '1d ago', content: "برهوم القوي حبيبي الحمدلله على سلامتك .. الله يحميك ويحفظك يا بطلي😍😍", sentiment: 'positive', engagement: 'Low', likes: '45', shares: '0' },
+                    
+                    // FACEBOOK (Community Comments)
+                    { id: 401, source: 'facebook', user: 'Em Mohamed', handle: 'Community', date: '2d ago', content: "بسم الله ما شاء الله.. يارب كل المرضى يدقو هالجرس ياالله ويشفيهم ويعافيهم يارب.", sentiment: 'positive', engagement: 'Medium', likes: '56', shares: '2' },
+                    { id: 402, source: 'facebook', user: 'Razan Ayasra', handle: 'Top Fan', date: '2d ago', content: "الحمد لله حمدا كثيرا طيبا مباركا فيه …. بسم الله ما شاء الله الف الحمد لله عسلامة برهومتنا البطل... The real super hero.", sentiment: 'positive', engagement: 'Medium', likes: '89', shares: '5' },
+                    { id: 403, source: 'facebook', user: 'Ola Abdullah', handle: 'Community', date: '19h ago', content: "يعطيكم ألف عافية قد ما بتتعبوا أطباء وممرضيين، والحمدلله على سلامته والله يشفي كل المرضى يارب.", sentiment: 'positive', engagement: 'Low', likes: '34', shares: '1' },
+                    { id: 404, source: 'facebook', user: 'Naser Q. Qaqish', handle: 'User', date: '6h ago', content: "عندي استفسار بخصوص تجديد الإعفاء، الموقع الالكتروني ما عم بفتح معي من الصبح. يرجى المساعدة.", sentiment: 'negative', engagement: 'Low', likes: '12', shares: '0' }, // Kept one negative for filtering demo
+                    { id: 405, source: 'facebook', user: 'Hisham Al-bashiti', handle: 'Community', date: '2d ago', content: "الله يحمي يارب ويشافي جميع المرضى.", sentiment: 'positive', engagement: 'Low', likes: '20', shares: '0' },
+                    { id: 406, source: 'facebook', user: 'Manoosh Abukaraki', handle: 'Community', date: '2d ago', content: "ما شاء الله تبارك الله البطل الشجاع اسال الله العظيم رب العرش العظيم ان يتمم شفائه ويكون بأعلى المراتب.", sentiment: 'positive', engagement: 'Low', likes: '41', shares: '1' }
                 ],
-                get filteredPosts() { 
-                    return this.filter === 'all' ? this.posts : this.posts.filter(p => p.sentiment === this.filter);
+                
+                get sortedAndFilteredPosts() { 
+                    let result = this.posts;
+                    
+                    // 1. FILTER
+                    if (this.filter !== 'all') {
+                        result = result.filter(p => p.sentiment === this.filter);
+                    }
+
+                    // 2. SORT
+                    return result.sort((a, b) => {
+                        if (this.sortBy === 'date') {
+                            // Simple Sort by ID (assuming higher ID is newer for this demo)
+                            return b.id - a.id; 
+                        } else if (this.sortBy === 'sentiment') {
+                            // Sort Order: Positive -> Neutral -> Negative
+                            const map = { 'positive': 3, 'neutral': 2, 'negative': 1 };
+                            return map[b.sentiment] - map[a.sentiment];
+                        } else if (this.sortBy === 'source') {
+                            // Sort Order: FB -> Insta -> Twitter -> Web
+                            const map = { 'facebook': 4, 'instagram': 3, 'twitter': 2, 'web': 1 };
+                            return map[b.source] - map[a.source];
+                        }
+                        return 0;
+                    });
                 },
                 switchTab(tab) {
                     this.isLoading = true;
-                    setTimeout(() => {
-                        this.currentTab = tab;
-                        this.isLoading = false;
-                    }, 600); // Simulate network latency
+                    setTimeout(() => { this.currentTab = tab; this.isLoading = false; }, 600);
                 },
                 simulateAction(msg) {
                     this.isLoading = true;
-                    setTimeout(() => {
-                        this.isLoading = false;
-                        this.showToast(msg);
-                    }, 1200);
+                    setTimeout(() => { this.isLoading = false; this.showToast(msg); }, 1200);
                 },
                 showToast(message) {
                     this.toast.message = message;
                     this.toast.visible = true;
                     setTimeout(() => { this.toast.visible = false; }, 3000);
                 },
+                openCrawlerModal() {
+                    this.newPost = { content: '', user: '', source: 'twitter', sentiment: 'neutral' };
+                    this.showCrawlerModal = true;
+                },
+                addManualPost() {
+                    if(!this.newPost.content) return;
+                    this.showCrawlerModal = false;
+                    this.isLoading = true;
+                    setTimeout(() => {
+                        this.isLoading = false;
+                        const post = {
+                            id: Date.now(), 
+                            source: this.newPost.source,
+                            user: this.newPost.user || 'Anonymous User',
+                            handle: '@' + (this.newPost.user ? this.newPost.user.replace(/\s/g,'') : 'unknown'),
+                            date: 'Just now',
+                            content: this.newPost.content,
+                            sentiment: this.newPost.sentiment,
+                            engagement: 'New', likes: '0', shares: '0'
+                        };
+                        this.posts.unshift(post);
+                        this.showToast('Signal Injected Successfully');
+                    }, 800);
+                },
                 getSourceIcon(source) {
                     const icons = {
                         twitter: '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
                         facebook: '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
+                        instagram: '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>',
                         web: '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>'
                     };
                     return icons[source] || icons.web;
                 },
                 getSourceClass(source) {
-                    const classes = { twitter: 'bg-black', facebook: 'bg-blue-600', web: 'bg-slate-400' };
+                    const classes = { twitter: 'bg-black', facebook: 'bg-blue-600', instagram: 'bg-pink-600', web: 'bg-slate-400' };
                     return classes[source] || 'bg-slate-400';
                 },
                 initCharts() {
-                    // Logic handled in separate script tag below
+                    Chart.defaults.font.family = "'Inter', sans-serif";
+                    Chart.defaults.color = '#64748b';
+
+                    const gaugeNeedle = {
+                        id: 'gaugeNeedle',
+                        afterDatasetDraw(chart) {
+                            const { ctx, chartArea: { width, height } } = chart;
+                            ctx.save();
+                            const value = 0.8; 
+                            const angle = Math.PI + (Math.PI * value);
+                            const cx = width / 2;
+                            const cy = height - 6;
+                            ctx.translate(cx, cy);
+                            ctx.rotate(angle);
+                            ctx.beginPath();
+                            ctx.moveTo(0, -3);
+                            ctx.lineTo(height - 25, 0);
+                            ctx.lineTo(0, 3);
+                            ctx.fillStyle = '#1e293b';
+                            ctx.fill();
+                            ctx.restore();
+                            ctx.beginPath();
+                            ctx.arc(cx, cy, 4, 0, 10);
+                            ctx.fillStyle = '#1e293b';
+                            ctx.fill();
+                        }
+                    };
+
+                    new Chart(document.getElementById('bhiChart'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Bad', 'Average', 'Good', 'Excellent'],
+                            datasets: [{ data: [20, 20, 20, 40], backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'], borderWidth: 0 }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, rotation: -90, circumference: 180, cutout: '80%', plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { display: false } } },
+                        plugins: [gaugeNeedle]
+                    });
+
+                    const ctxV = document.getElementById('velocityChart').getContext('2d');
+                    const gradOwned = ctxV.createLinearGradient(0, 0, 0, 300); gradOwned.addColorStop(0, 'rgba(59, 130, 246, 0.2)'); gradOwned.addColorStop(1, 'rgba(59, 130, 246, 0)');
+                    const gradEarned = ctxV.createLinearGradient(0, 0, 0, 300); gradEarned.addColorStop(0, 'rgba(139, 92, 246, 0.2)'); gradEarned.addColorStop(1, 'rgba(139, 92, 246, 0)');
+
+                    new Chart(ctxV, {
+                        type: 'line',
+                        data: {
+                            labels: ['Dec 06', 'Dec 07', 'Dec 08', 'Dec 09', 'Dec 10', 'Dec 11', 'Dec 12'],
+                            datasets: [
+                                { label: 'Owned', data: [120, 150, 450, 200, 300, 400, 350], borderColor: '#3b82f6', backgroundColor: gradOwned, fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4 },
+                                { label: 'Earned', data: [200, 250, 300, 280, 320, 1400, 1200], borderColor: '#8b5cf6', backgroundColor: gradEarned, fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4 }
+                            ]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { borderDash: [4, 4] } } }, interaction: { mode: 'index', intersect: false } }
+                    });
+
+                    new Chart(document.getElementById('platformSentimentChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Facebook', 'Twitter', 'Instagram', 'Web'],
+                            datasets: [
+                                { label: 'Positive', data: [65, 40, 80, 20], backgroundColor: '#10b981', stack: 'Stack 0', barThickness: 20 },
+                                { label: 'Negative', data: [15, 30, 5, 5], backgroundColor: '#ef4444', stack: 'Stack 0', barThickness: 20 },
+                                { label: 'Neutral', data: [20, 30, 15, 75], backgroundColor: '#e2e8f0', stack: 'Stack 0', barThickness: 20 }
+                            ]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false } }, y: { display: false, stacked: true } }, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true } }, datalabels: { display: false } } }
+                    });
+
+                    new Chart(document.getElementById('demoChart'), {
+                        type: 'doughnut',
+                        data: { labels: ['Female', 'Male'], datasets: [{ data: [68, 32], backgroundColor: ['#ec4899', '#3b82f6'], borderWidth: 0 }] },
+                        options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, datalabels: { color: 'white', font: { weight: 'bold' } } } }
+                    });
+
+                    new Chart(document.getElementById('sourceChart'), {
+                        type: 'bar',
+                        indexAxis: 'y',
+                        data: {
+                            labels: ['Facebook', 'Twitter/X', 'Instagram', 'Web'],
+                            datasets: [{ data: [65, 25, 8, 2], backgroundColor: ['#1877F2', '#000000', '#E4405F', '#64748b'], borderRadius: 4, barThickness: 12 }]
+                        },
+                        options: { 
+                            responsive: true, maintainAspectRatio: false, 
+                            plugins: { 
+                                legend: { 
+                                    display: true, position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { size: 10 },
+                                    generateLabels: (chart) => {
+                                        const data = chart.data;
+                                        return data.labels.map((label, i) => ({ text: label, fillStyle: data.datasets[0].backgroundColor[i], strokeStyle: data.datasets[0].backgroundColor[i], hidden: false, index: i }));
+                                    }}
+                                }, 
+                                datalabels: { anchor: 'end', align: 'end', color: '#64748b', formatter: v => v + '%' } 
+                            },
+                            scales: { x: { display: true, grid: { color: '#f1f5f9' }, ticks: { display: false } }, y: { grid: { display: false } } }
+                        }
+                    });
                 }
             }
         }
-    </script>
-
-    <script>
-        // CHART INITIALIZATION
-        document.addEventListener('alpine:init', () => {
-            Chart.defaults.font.family = "'Inter', sans-serif";
-            Chart.defaults.color = '#64748b';
-            
-            // 1. GAUGE NEEDLE PLUGIN
-            const gaugeNeedle = {
-                id: 'gaugeNeedle',
-                afterDatasetDraw(chart) {
-                    const { ctx, chartArea: { width, height } } = chart;
-                    ctx.save();
-                    const value = 0.8; 
-                    const angle = Math.PI + (Math.PI * value);
-                    const cx = width / 2;
-                    const cy = height - 6;
-
-                    ctx.translate(cx, cy);
-                    ctx.rotate(angle);
-                    ctx.beginPath();
-                    ctx.moveTo(0, -3);
-                    ctx.lineTo(height - 25, 0);
-                    ctx.lineTo(0, 3);
-                    ctx.fillStyle = '#1e293b';
-                    ctx.fill();
-                    ctx.restore();
-                    
-                    ctx.beginPath();
-                    ctx.arc(cx, cy, 4, 0, 10);
-                    ctx.fillStyle = '#1e293b';
-                    ctx.fill();
-                }
-            };
-
-            // BHI Chart
-            new Chart(document.getElementById('bhiChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Bad', 'Average', 'Good', 'Excellent'],
-                    datasets: [{
-                        data: [20, 20, 20, 40],
-                        backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
-                        borderWidth: 0,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    rotation: -90,
-                    circumference: 180,
-                    cutout: '80%',
-                    plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { display: false } }
-                },
-                plugins: [gaugeNeedle]
-            });
-
-            // Velocity Chart (UPDATED: Owned vs Earned)
-            const ctxV = document.getElementById('velocityChart').getContext('2d');
-            
-            // Gradients
-            const gradOwned = ctxV.createLinearGradient(0, 0, 0, 300);
-            gradOwned.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
-            gradOwned.addColorStop(1, 'rgba(59, 130, 246, 0)');
-
-            const gradEarned = ctxV.createLinearGradient(0, 0, 0, 300);
-            gradEarned.addColorStop(0, 'rgba(139, 92, 246, 0.2)');
-            gradEarned.addColorStop(1, 'rgba(139, 92, 246, 0)');
-
-            new Chart(ctxV, {
-                type: 'line',
-                data: {
-                    labels: ['Dec 06', 'Dec 07', 'Dec 08', 'Dec 09', 'Dec 10', 'Dec 11', 'Dec 12'],
-                    datasets: [
-                        { 
-                            label: 'Owned', 
-                            data: [120, 150, 450, 200, 300, 400, 350], 
-                            borderColor: '#3b82f6', 
-                            backgroundColor: gradOwned, 
-                            fill: true, 
-                            tension: 0.4, 
-                            borderWidth: 2,
-                            pointRadius: 0,
-                            pointHoverRadius: 4
-                        },
-                        { 
-                            label: 'Earned', 
-                            data: [200, 250, 300, 280, 320, 1400, 1200], // Simulating the viral spike
-                            borderColor: '#8b5cf6', 
-                            backgroundColor: gradEarned, 
-                            fill: true, 
-                            tension: 0.4, 
-                            borderWidth: 2,
-                            pointRadius: 0,
-                            pointHoverRadius: 4
-                        }
-                    ]
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, datalabels: { display: false } },
-                    scales: { x: { grid: { display: false } }, y: { grid: { borderDash: [4, 4] } } },
-                    interaction: { mode: 'index', intersect: false }
-                }
-            });
-
-            // Sentiment Bar
-            new Chart(document.getElementById('platformSentimentChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Facebook', 'Twitter', 'Instagram', 'Web'],
-                    datasets: [
-                        { label: 'Positive', data: [65, 40, 80, 20], backgroundColor: '#10b981', stack: 'Stack 0', barThickness: 20 },
-                        { label: 'Negative', data: [15, 30, 5, 5], backgroundColor: '#ef4444', stack: 'Stack 0', barThickness: 20 },
-                        { label: 'Neutral', data: [20, 30, 15, 75], backgroundColor: '#e2e8f0', stack: 'Stack 0', barThickness: 20 }
-                    ]
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    scales: { x: { grid: { display: false } }, y: { display: false, stacked: true } },
-                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true } }, datalabels: { display: false } }
-                }
-            });
-
-            // Demographics
-            new Chart(document.getElementById('demoChart'), {
-                type: 'doughnut',
-                data: { 
-                    labels: ['Female', 'Male'], 
-                    datasets: [{ data: [68, 32], backgroundColor: ['#ec4899', '#3b82f6'], borderWidth: 0 }] 
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    cutout: '70%', 
-                    plugins: { legend: { display: false }, datalabels: { color: 'white', font: { weight: 'bold' } } } 
-                }
-            });
-
-            // Sources (UPDATED: Custom Colored Legend)
-            new Chart(document.getElementById('sourceChart'), {
-                type: 'bar',
-                indexAxis: 'y',
-                data: {
-                    labels: ['Facebook', 'Twitter/X', 'Instagram', 'Web'],
-                    datasets: [{ 
-                        // Note: Label removed here as we generate custom legend below
-                        data: [65, 25, 8, 2], 
-                        backgroundColor: ['#1877F2', '#000000', '#E4405F', '#64748b'], 
-                        borderRadius: 4, 
-                        barThickness: 12 
-                    }]
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: { 
-                        legend: { 
-                            display: true, 
-                            position: 'bottom', 
-                            labels: { 
-                                usePointStyle: true, 
-                                boxWidth: 8, 
-                                font: { size: 10 },
-                                // This function creates a legend item for every BAR, not just the dataset
-                                generateLabels: (chart) => {
-                                    const data = chart.data;
-                                    return data.labels.map((label, i) => ({
-                                        text: label,
-                                        fillStyle: data.datasets[0].backgroundColor[i],
-                                        strokeStyle: data.datasets[0].backgroundColor[i],
-                                        hidden: false,
-                                        index: i
-                                    }));
-                                }
-                            },
-                            // Disable default click behavior (hiding bars) since it's one dataset
-                            onClick: null 
-                        }, 
-                        datalabels: { 
-                            anchor: 'end', 
-                            align: 'end', 
-                            color: '#64748b', 
-                            formatter: v => v + '%' 
-                        } 
-                    },
-                    scales: { 
-                        x: { 
-                            display: true, 
-                            grid: { color: '#f1f5f9' }, 
-                            ticks: { display: false } 
-                        }, 
-                        y: { 
-                            grid: { display: false } 
-                        } 
-                    }
-                }
-            });
-        });
     </script>
 </body>
 </html>
