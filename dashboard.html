@@ -23,13 +23,13 @@
                     colors: {
                         slate: { 850: '#1e293b', 900: '#0f172a' },
                         brand: {
-                            primary: '#3b82f6', // KHCC Blue
+                            primary: '#3b82f6', // KHCC (Blue)
                             accent: '#8b5cf6',
                             success: '#10b981', 
                             warning: '#f59e0b', 
                             danger: '#ef4444',
-                            comp1: '#ef4444',   // NCI Egypt (Red)
-                            comp2: '#10b981'    // KCC Kuwait (Green)
+                            comp1: '#f97316',   // NCI Egypt (Orange)
+                            comp2: '#14b8a6'    // KCC Kuwait (Teal)
                         }
                     }
                 }
@@ -306,80 +306,38 @@
                     
                     <div class="flex items-center justify-between mb-6">
                         <div>
-                            <h3 class="text-xl font-bold text-slate-800">Regional Benchmarking</h3>
-                            <p class="text-sm text-slate-500">KHCC (Jordan) vs. NCI (Egypt) vs. KCC (Kuwait)</p>
-                        </div>
-                        <div class="flex items-center space-x-4 text-xs font-bold">
-                            <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-brand-primary mr-2"></span> KHCC</span>
-                            <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-brand-comp1 mr-2"></span> NCI Egypt</span>
-                            <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-brand-comp2 mr-2"></span> KCC Kuwait</span>
+                            <h3 class="text-xl font-bold text-slate-800">Competitive Landscape</h3>
+                            <p class="text-sm text-slate-500">Benchmarking Performance & Positioning</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                            <h3 class="font-bold text-slate-800 text-sm mb-4">Strategic Brand Positioning</h3>
-                            <div class="h-80 chart-container">
-                                <canvas id="compRadarChart"></canvas>
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center">
+                            <h3 class="font-bold text-slate-800 text-sm mb-4 w-full text-center">Share of Volume</h3>
+                            <div class="h-48 w-48 relative"><canvas id="sovVolumeChart"></canvas></div>
                         </div>
-
-                        <div class="flex flex-col gap-6">
-                            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex-1">
-                                <h3 class="font-bold text-slate-800 text-sm mb-2">Share of Voice (Volume)</h3>
-                                <div class="h-48 chart-container">
-                                    <canvas id="compSovChart"></canvas>
-                                </div>
-                            </div>
-                            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex-1">
-                                <h3 class="font-bold text-slate-800 text-sm mb-2">Sentiment Comparison</h3>
-                                <div class="h-48 chart-container">
-                                    <canvas id="compSentimentChart"></canvas>
-                                </div>
-                            </div>
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center">
+                            <h3 class="font-bold text-slate-800 text-sm mb-4 w-full text-center">Share of Engagement</h3>
+                            <div class="h-48 w-48 relative"><canvas id="sovEngagementChart"></canvas></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center">
+                            <h3 class="font-bold text-slate-800 text-sm mb-4 w-full text-center">Share of Reach</h3>
+                            <div class="h-48 w-48 relative"><canvas id="sovReachChart"></canvas></div>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
-                            <h3 class="font-bold text-slate-800 text-sm">Trending Topics by Competitor</h3>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-slate-800 text-sm">Strategic Brand Positioning</h3>
+                            <div class="flex items-center space-x-4 text-xs font-bold">
+                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-brand-primary mr-1.5"></span> KHCC</span>
+                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-brand-comp1 mr-1.5"></span> NCI Egypt</span>
+                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-brand-comp2 mr-1.5"></span> KCC Kuwait</span>
+                            </div>
                         </div>
-                        <table class="w-full text-sm text-left">
-                            <thead class="text-xs text-slate-500 uppercase bg-slate-50/50">
-                                <tr>
-                                    <th class="px-6 py-3">Topic / Keyword</th>
-                                    <th class="px-6 py-3 text-brand-primary">KHCC (Jordan)</th>
-                                    <th class="px-6 py-3 text-brand-comp1">NCI (Egypt)</th>
-                                    <th class="px-6 py-3 text-brand-comp2">KCC (Kuwait)</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                <tr class="hover:bg-slate-50">
-                                    <td class="px-6 py-3 font-medium text-slate-700">Patient Success Stories</td>
-                                    <td class="px-6 py-3 font-bold text-green-600">High (Viral)</td>
-                                    <td class="px-6 py-3 text-slate-400">Low</td>
-                                    <td class="px-6 py-3 text-slate-400">Medium</td>
-                                </tr>
-                                <tr class="hover:bg-slate-50">
-                                    <td class="px-6 py-3 font-medium text-slate-700">Wait Times / Access</td>
-                                    <td class="px-6 py-3 text-green-600">Positive</td>
-                                    <td class="px-6 py-3 text-red-500 font-bold">Negative (High Vol)</td>
-                                    <td class="px-6 py-3 text-yellow-500">Mixed</td>
-                                </tr>
-                                <tr class="hover:bg-slate-50">
-                                    <td class="px-6 py-3 font-medium text-slate-700">Research & Innovation</td>
-                                    <td class="px-6 py-3 text-slate-600">High</td>
-                                    <td class="px-6 py-3 font-bold text-brand-comp1">Very High</td>
-                                    <td class="px-6 py-3 text-slate-400">Low</td>
-                                </tr>
-                                <tr class="hover:bg-slate-50">
-                                    <td class="px-6 py-3 font-medium text-slate-700">Facilities & Infrastructure</td>
-                                    <td class="px-6 py-3 text-slate-600">Excellent</td>
-                                    <td class="px-6 py-3 text-slate-600">Good</td>
-                                    <td class="px-6 py-3 font-bold text-brand-comp2">State-of-Art</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="h-80 chart-container">
+                            <canvas id="compRadarChart"></canvas>
+                        </div>
                     </div>
 
                 </div>
@@ -404,7 +362,6 @@
                 },
                 newPost: { content: '', user: '', source: 'twitter', sentiment: 'neutral' },
                 
-                // DATASET POPOULATED FROM USER'S PASTE
                 posts: [
                     { id: 101, source: 'twitter', user: 'Dr. Abdulaziz AlJassim', handle: '@DrZ_84', date: 'Dec 10', content: "التشخيص الدقيق لأورام الرئة وفهم وجود طفرات جينية من عدمها يؤدي الى اختيار العلاج المناسب... اختفاء شبه كامل للورم بعد ٣ شهور من العلاج الموجّه وتوفيق من الله.", sentiment: 'positive', engagement: 'High', likes: '3.2k', shares: '1.5k' },
                     { id: 102, source: 'twitter', user: 'Nabdalbalad - نبض البلد', handle: '@royanabdalbalad', date: 'Dec 02', content: "مدير عام مؤسسة الحسين للسرطان نسرين قطامش: دوامة الإجراءات في مركز الحسين للسرطان تم اختصارها على المريض... تفاصيل بالفيديو.", sentiment: 'positive', engagement: 'Medium', likes: '450', shares: '120' },
@@ -542,7 +499,6 @@
                         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { borderDash: [4, 4] } } }, interaction: { mode: 'index', intersect: false } }
                     });
 
-                    // SENTIMENT: Numbers visible without hovering
                     new Chart(document.getElementById('platformSentimentChart'), {
                         type: 'bar',
                         data: {
@@ -558,19 +514,17 @@
                             scales: { x: { grid: { display: false } }, y: { display: false, stacked: true } }, 
                             plugins: { 
                                 legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true } }, 
-                                datalabels: { display: true, color: 'white', font: { weight: 'bold', size: 10 }, formatter: (v) => v > 10 ? v : '' } // Show only if big enough
+                                datalabels: { display: true, color: 'white', font: { weight: 'bold', size: 10 }, formatter: (v) => v > 10 ? v : '' } 
                             } 
                         }
                     });
 
-                    // DEMOGRAPHICS: Male vs Female Restored
                     new Chart(document.getElementById('demoChart'), {
                         type: 'doughnut',
                         data: { labels: ['Female', 'Male'], datasets: [{ data: [68, 32], backgroundColor: ['#ec4899', '#3b82f6'], borderWidth: 0 }] },
                         options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, datalabels: { color: 'white', font: { weight: 'bold' } } } }
                     });
 
-                    // SOURCES: Clear Legend & Numbers
                     new Chart(document.getElementById('sourceChart'), {
                         type: 'bar',
                         indexAxis: 'y',
@@ -594,7 +548,6 @@
                         }
                     });
 
-                    // BRAND PILLARS
                     new Chart(document.getElementById('brandPillarsChart'), {
                         type: 'bar',
                         indexAxis: 'y',
@@ -628,60 +581,61 @@
                         }
                     });
 
-                    // --- NEW COMPETITOR CHARTS ---
-
-                    // 1. RADAR STRATEGY CHART
-                    new Chart(document.getElementById('compRadarChart'), {
-                        type: 'radar',
-                        data: {
-                            labels: ['Patient Exp.', 'Research Output', 'Digital Eng.', 'Facilities', 'Med. Prestige'],
-                            datasets: [
-                                { label: 'KHCC (Jordan)', data: [95, 75, 90, 85, 90], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.2)', pointBackgroundColor: '#3b82f6', borderWidth: 2 },
-                                { label: 'NCI (Egypt)', data: [65, 95, 70, 60, 85], borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.2)', pointBackgroundColor: '#ef4444', borderWidth: 2 },
-                                { label: 'KCC (Kuwait)', data: [75, 60, 50, 95, 80], borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.2)', pointBackgroundColor: '#10b981', borderWidth: 2 }
-                            ]
-                        },
-                        options: {
-                            responsive: true, maintainAspectRatio: false,
-                            scales: { r: { suggestMin: 0, suggestMax: 100, ticks: { display: false, stepSize: 20 }, pointLabels: { font: { size: 11, weight: 'bold' }, color: '#64748b' } } },
-                            plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } }, datalabels: { display: false } }
+                    // --- NEW COMPETITOR CHARTS (Share of X Doughnuts) ---
+                    
+                    const commonDoughnutOptions = {
+                        responsive: true, maintainAspectRatio: false, cutout: '65%',
+                        plugins: { 
+                            legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { size: 10 } } },
+                            datalabels: { color: 'white', font: { weight: 'bold', size: 11 }, formatter: (v) => v + '%' } 
                         }
-                    });
+                    };
 
-                    // 2. COMPETITOR SOV (Donut)
-                    new Chart(document.getElementById('compSovChart'), {
+                    // 1. Share of Volume
+                    new Chart(document.getElementById('sovVolumeChart'), {
                         type: 'doughnut',
                         data: {
                             labels: ['NCI Egypt', 'KHCC Jordan', 'KCC Kuwait'],
-                            datasets: [{ data: [55, 30, 15], backgroundColor: ['#ef4444', '#3b82f6', '#10b981'], borderWidth: 0 }]
+                            datasets: [{ data: [52, 33, 15], backgroundColor: ['#f97316', '#3b82f6', '#14b8a6'], borderWidth: 0 }]
                         },
-                        options: {
-                            responsive: true, maintainAspectRatio: false, cutout: '65%',
-                            plugins: { 
-                                legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8 } },
-                                datalabels: { color: 'white', font: { weight: 'bold' }, formatter: (v) => v + '%' } 
-                            }
-                        }
+                        options: commonDoughnutOptions
                     });
 
-                    // 3. COMPETITOR SENTIMENT (Stacked Bar)
-                    new Chart(document.getElementById('compSentimentChart'), {
-                        type: 'bar',
+                    // 2. Share of Engagement
+                    new Chart(document.getElementById('sovEngagementChart'), {
+                        type: 'doughnut',
                         data: {
-                            labels: ['KHCC', 'NCI', 'KCC'],
+                            labels: ['NCI Egypt', 'KHCC Jordan', 'KCC Kuwait'],
+                            datasets: [{ data: [25, 60, 15], backgroundColor: ['#f97316', '#3b82f6', '#14b8a6'], borderWidth: 0 }]
+                        },
+                        options: commonDoughnutOptions
+                    });
+
+                    // 3. Share of Reach
+                    new Chart(document.getElementById('sovReachChart'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['NCI Egypt', 'KHCC Jordan', 'KCC Kuwait'],
+                            datasets: [{ data: [45, 45, 10], backgroundColor: ['#f97316', '#3b82f6', '#14b8a6'], borderWidth: 0 }]
+                        },
+                        options: commonDoughnutOptions
+                    });
+
+                    // 4. Strategic Radar (Updated Axes)
+                    new Chart(document.getElementById('compRadarChart'), {
+                        type: 'radar',
+                        data: {
+                            labels: ['Medical Trust', 'Humanity', 'National Pride', 'Hope'],
                             datasets: [
-                                { label: 'Positive', data: [75, 40, 50], backgroundColor: '#10b981', stack: 'Stack 0' },
-                                { label: 'Neutral', data: [15, 30, 40], backgroundColor: '#cbd5e1', stack: 'Stack 0' },
-                                { label: 'Negative', data: [10, 30, 10], backgroundColor: '#ef4444', stack: 'Stack 0' }
+                                { label: 'KHCC Jordan', data: [85, 95, 90, 95], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.2)', pointBackgroundColor: '#3b82f6', borderWidth: 2 },
+                                { label: 'NCI Egypt', data: [95, 70, 85, 60], borderColor: '#f97316', backgroundColor: 'rgba(249, 115, 22, 0.2)', pointBackgroundColor: '#f97316', borderWidth: 2 },
+                                { label: 'KCC Kuwait', data: [80, 65, 95, 55], borderColor: '#14b8a6', backgroundColor: 'rgba(20, 184, 166, 0.2)', pointBackgroundColor: '#14b8a6', borderWidth: 2 }
                             ]
                         },
                         options: {
                             responsive: true, maintainAspectRatio: false,
-                            scales: { x: { grid: { display: false } }, y: { display: false, stacked: true } },
-                            plugins: { 
-                                legend: { display: false }, 
-                                datalabels: { color: 'white', font: { weight: 'bold', size: 10 }, formatter: (v) => v > 10 ? v + '%' : '' } 
-                            }
+                            scales: { r: { suggestMin: 0, suggestMax: 100, ticks: { display: false, stepSize: 20 }, pointLabels: { font: { size: 12, weight: 'bold' }, color: '#64748b' } } },
+                            plugins: { legend: { display: false }, datalabels: { display: false } }
                         }
                     });
                 }
