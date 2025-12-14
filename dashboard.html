@@ -542,7 +542,8 @@
                                     labels: { 
                                         usePointStyle: true, boxWidth: 8, font: { size: 9 }, padding: 15,
                                         generateLabels: (chart) => {
-                                            const fullTitles = ['Medical Trust & Clinical Excellence', 'Humanity, Compassion & Emotional Care', 'National Pride & Institutional Credibility', 'Hope, Survival & Life Impact'];
+                                            // Shorter names to fit 2 per line naturally in the legend box
+                                            const fullTitles = ['Medical Trust & Excellence', 'Humanity & Compassion', 'National Pride & Credibility', 'Hope & Survival'];
                                             const data = chart.data;
                                             return data.labels.map((label, i) => ({ 
                                                 text: fullTitles[i], 
@@ -553,7 +554,7 @@
                                         }
                                     } 
                                 }, 
-                                tooltip: { enabled: false }, // Legend explains it all now
+                                tooltip: { enabled: true }, 
                                 datalabels: { display: true, anchor: 'end', align: 'end', color: '#64748b', font: { weight: 'bold' }, formatter: v => v + '%' } 
                             },
                             scales: { x: { display: true, max: 60, grid: { color: '#f1f5f9' }, ticks: { display: false } }, y: { grid: { display: false }, ticks: { font: { size: 10, weight: '600' } } } }
