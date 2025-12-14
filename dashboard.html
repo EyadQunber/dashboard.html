@@ -24,12 +24,8 @@
                         slate: { 850: '#1e293b', 900: '#0f172a' },
                         brand: {
                             primary: '#3b82f6', // KHCC (Blue)
-                            accent: '#8b5cf6',
-                            success: '#10b981', 
-                            warning: '#f59e0b', 
-                            danger: '#ef4444',
-                            comp1: '#f97316',   // NCI Egypt (Orange)
-                            comp2: '#14b8a6'    // KCC Kuwait (Teal)
+                            comp1: '#ef4444',   // NCI Egypt (Red)
+                            comp2: '#10b981'    // KCC Kuwait (Green)
                         }
                     }
                 }
@@ -137,7 +133,7 @@
             <nav class="flex-1 px-3 py-6 space-y-1">
                 <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Analytics</p>
                 <a href="#" @click.prevent="switchTab('dashboard')" :class="currentTab === 'dashboard' ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'text-slate-400 hover:text-white hover:bg-slate-800'" class="group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200">
-                    <svg class="w-5 h-5 mr-3 transition-colors" :class="currentTab === 'dashboard' ? 'text-white' : 'text-slate-500 group-hover:text-white'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    <svg class="w-5 h-5 mr-3 transition-colors" :class="currentTab === 'dashboard' ? 'text-white' : 'text-slate-500 group-hover:text-white'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     Dashboard
                 </a>
                 <a href="#" @click.prevent="switchTab('mentions')" :class="currentTab === 'mentions' ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'text-slate-400 hover:text-white hover:bg-slate-800'" class="group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200">
@@ -198,7 +194,6 @@
                             <p class="text-xs text-green-600 mt-1 font-medium">Dominant in Healthcare Sector</p>
                         </div>
                     </div>
-
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                          <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                             <h3 class="font-bold text-slate-800 text-sm mb-4">Mention Trendline by Media Type</h3>
@@ -209,7 +204,6 @@
                             <div class="h-64 chart-container"><canvas id="platformSentimentChart"></canvas></div>
                         </div>
                     </div>
-
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                             <h3 class="font-bold text-slate-800 text-sm mb-4">Demographics</h3>
@@ -219,12 +213,10 @@
                                 <div class="flex items-center"><span class="w-2 h-2 bg-blue-500 rounded-full mr-1.5"></span><span class="text-xs font-bold text-slate-600">Male (32%)</span></div>
                             </div>
                         </div>
-                        
                         <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                             <h3 class="font-bold text-slate-800 text-sm mb-4">Social Media Sources</h3>
                             <div class="h-56 chart-container"><canvas id="sourceChart"></canvas></div>
                         </div>
-
                         <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                             <h3 class="font-bold text-slate-800 text-sm mb-4">Brand Image Analysis</h3>
                             <div class="h-56 chart-container"><canvas id="brandPillarsChart"></canvas></div>
@@ -326,18 +318,34 @@
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-6">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="font-bold text-slate-800 text-sm">Strategic Brand Positioning</h3>
                             <div class="flex items-center space-x-4 text-xs font-bold">
-                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-brand-primary mr-1.5"></span> KHCC</span>
-                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-brand-comp1 mr-1.5"></span> NCI Egypt</span>
-                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-brand-comp2 mr-1.5"></span> KCC Kuwait</span>
+                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-brand-primary mr-1.5"></span> KHCC (Jordan)</span>
+                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-brand-comp1 mr-1.5"></span> NCI (Egypt)</span>
+                                <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-brand-comp2 mr-1.5"></span> KCC (Kuwait)</span>
                             </div>
                         </div>
                         <div class="h-80 chart-container">
                             <canvas id="compRadarChart"></canvas>
                         </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-slate-800 text-sm mb-4">Mention Trends (30 Days)</h3>
+                            <div class="h-64 chart-container"><canvas id="compTrendChart"></canvas></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-slate-800 text-sm mb-4">Sentiment Analysis per Brand</h3>
+                            <div class="h-64 chart-container"><canvas id="compSentimentChart"></canvas></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="font-bold text-slate-800 text-sm mb-4">Top Social Media Sources by Brand</h3>
+                        <div class="h-64 chart-container"><canvas id="compSourcesChart"></canvas></div>
                     </div>
 
                 </div>
@@ -581,7 +589,7 @@
                         }
                     });
 
-                    // --- NEW COMPETITOR CHARTS (Share of X Doughnuts) ---
+                    // --- COMPETITOR ANALYSIS CHARTS ---
                     
                     const commonDoughnutOptions = {
                         responsive: true, maintainAspectRatio: false, cutout: '65%',
@@ -591,51 +599,111 @@
                         }
                     };
 
-                    // 1. Share of Volume
                     new Chart(document.getElementById('sovVolumeChart'), {
                         type: 'doughnut',
                         data: {
                             labels: ['NCI Egypt', 'KHCC Jordan', 'KCC Kuwait'],
-                            datasets: [{ data: [52, 33, 15], backgroundColor: ['#f97316', '#3b82f6', '#14b8a6'], borderWidth: 0 }]
+                            datasets: [{ data: [52, 33, 15], backgroundColor: ['#ef4444', '#3b82f6', '#10b981'], borderWidth: 0 }]
                         },
                         options: commonDoughnutOptions
                     });
 
-                    // 2. Share of Engagement
                     new Chart(document.getElementById('sovEngagementChart'), {
                         type: 'doughnut',
                         data: {
                             labels: ['NCI Egypt', 'KHCC Jordan', 'KCC Kuwait'],
-                            datasets: [{ data: [25, 60, 15], backgroundColor: ['#f97316', '#3b82f6', '#14b8a6'], borderWidth: 0 }]
+                            datasets: [{ data: [25, 60, 15], backgroundColor: ['#ef4444', '#3b82f6', '#10b981'], borderWidth: 0 }]
                         },
                         options: commonDoughnutOptions
                     });
 
-                    // 3. Share of Reach
                     new Chart(document.getElementById('sovReachChart'), {
                         type: 'doughnut',
                         data: {
                             labels: ['NCI Egypt', 'KHCC Jordan', 'KCC Kuwait'],
-                            datasets: [{ data: [45, 45, 10], backgroundColor: ['#f97316', '#3b82f6', '#14b8a6'], borderWidth: 0 }]
+                            datasets: [{ data: [45, 45, 10], backgroundColor: ['#ef4444', '#3b82f6', '#10b981'], borderWidth: 0 }]
                         },
                         options: commonDoughnutOptions
                     });
 
-                    // 4. Strategic Radar (Updated Axes)
                     new Chart(document.getElementById('compRadarChart'), {
                         type: 'radar',
                         data: {
                             labels: ['Medical Trust', 'Humanity', 'National Pride', 'Hope'],
                             datasets: [
                                 { label: 'KHCC Jordan', data: [85, 95, 90, 95], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.2)', pointBackgroundColor: '#3b82f6', borderWidth: 2 },
-                                { label: 'NCI Egypt', data: [95, 70, 85, 60], borderColor: '#f97316', backgroundColor: 'rgba(249, 115, 22, 0.2)', pointBackgroundColor: '#f97316', borderWidth: 2 },
-                                { label: 'KCC Kuwait', data: [80, 65, 95, 55], borderColor: '#14b8a6', backgroundColor: 'rgba(20, 184, 166, 0.2)', pointBackgroundColor: '#14b8a6', borderWidth: 2 }
+                                { label: 'NCI Egypt', data: [95, 70, 85, 60], borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.2)', pointBackgroundColor: '#ef4444', borderWidth: 2 },
+                                { label: 'KCC Kuwait', data: [80, 65, 95, 55], borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.2)', pointBackgroundColor: '#10b981', borderWidth: 2 }
                             ]
                         },
                         options: {
                             responsive: true, maintainAspectRatio: false,
                             scales: { r: { suggestMin: 0, suggestMax: 100, ticks: { display: false, stepSize: 20 }, pointLabels: { font: { size: 12, weight: 'bold' }, color: '#64748b' } } },
-                            plugins: { legend: { display: false }, datalabels: { display: false } }
+                            plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } }, datalabels: { display: false } }
+                        }
+                    });
+
+                    // NEW CHART: Mention Trends Over Time (Line)
+                    const ctxTrend = document.getElementById('compTrendChart').getContext('2d');
+                    new Chart(ctxTrend, {
+                        type: 'line',
+                        data: {
+                            labels: ['Nov 15', 'Nov 20', 'Nov 25', 'Dec 01', 'Dec 05', 'Dec 10', 'Dec 15'],
+                            datasets: [
+                                { label: 'KHCC Jordan', data: [120, 130, 180, 450, 420, 480, 500], borderColor: '#3b82f6', backgroundColor: '#3b82f6', tension: 0.4, borderWidth: 2, pointRadius: 3 },
+                                { label: 'NCI Egypt', data: [300, 320, 280, 290, 350, 310, 330], borderColor: '#ef4444', backgroundColor: '#ef4444', tension: 0.4, borderWidth: 2, pointRadius: 3 },
+                                { label: 'KCC Kuwait', data: [80, 85, 90, 70, 110, 95, 100], borderColor: '#10b981', backgroundColor: '#10b981', tension: 0.4, borderWidth: 2, pointRadius: 3 }
+                            ]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            plugins: { 
+                                legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } },
+                                datalabels: { display: false } 
+                            },
+                            scales: { x: { grid: { display: false } }, y: { grid: { borderDash: [4, 4] } } }
+                        }
+                    });
+
+                    // NEW CHART: Sentiment Per Brand (Grouped Bar)
+                    new Chart(document.getElementById('compSentimentChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Positive', 'Neutral', 'Negative'],
+                            datasets: [
+                                { label: 'KHCC', data: [75, 15, 10], backgroundColor: '#3b82f6', borderRadius: 3 },
+                                { label: 'NCI', data: [40, 30, 30], backgroundColor: '#ef4444', borderRadius: 3 },
+                                { label: 'KCC', data: [50, 40, 10], backgroundColor: '#10b981', borderRadius: 3 }
+                            ]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            scales: { x: { grid: { display: false } }, y: { display: false } },
+                            plugins: { 
+                                legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } },
+                                datalabels: { display: true, color: '#64748b', anchor: 'end', align: 'top', font: { weight: 'bold', size: 10 }, formatter: v => v + '%' } 
+                            }
+                        }
+                    });
+
+                    // NEW CHART: Top Sources (Stacked Bar)
+                    new Chart(document.getElementById('compSourcesChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Facebook', 'X / Twitter', 'Instagram', 'Web News'],
+                            datasets: [
+                                { label: 'KHCC', data: [60, 20, 15, 5], backgroundColor: '#3b82f6', stack: 'Stack 0' },
+                                { label: 'NCI', data: [70, 10, 5, 15], backgroundColor: '#ef4444', stack: 'Stack 1' },
+                                { label: 'KCC', data: [40, 30, 10, 20], backgroundColor: '#10b981', stack: 'Stack 2' }
+                            ]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            scales: { x: { grid: { display: false } }, y: { display: false } },
+                            plugins: { 
+                                legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } },
+                                datalabels: { display: false } // Too crowded for datalabels
+                            }
                         }
                     });
                 }
